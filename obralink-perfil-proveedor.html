@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink — Perfil proveedor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232,103,42,0.22);
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --bg-card2:    #222220;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245,242,236,0.45);
+    --text-dim:    rgba(245,242,236,0.2);
+    --border:      rgba(245,242,236,0.07);
+    --border-md:   rgba(245,242,236,0.14);
+    --radius:      14px;
+    --radius-lg:   20px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:   'DM Sans', sans-serif;
+  }
+
+  html, body { background: var(--bg); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+  .shell { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+  .phone {
+    width: 100%; max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    display: flex; flex-direction: column;
+    max-height: 820px;
+    position: relative;
+  }
+
+  /* ── VISTAS ── */
+  .view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+  .view.active { display: flex; }
+
+  /* ── SCROLLABLE CONTENT ── */
+  .scroll { flex: 1; overflow-y: auto; }
+  .scroll::-webkit-scrollbar { width: 3px; }
+  .scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── HERO HEADER ── */
+  .hero {
+    background: #151513;
+    padding: 44px 20px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .hero-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+
+  .back-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .back-btn svg { width: 15px; height: 15px; stroke: var(--text-muted); stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  .hero-actions { display: flex; gap: 8px; }
+  .action-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .action-btn:hover { border-color: var(--brand); }
+  .action-btn.saved { background: rgba(232,103,42,0.1); border-color: rgba(232,103,42,0.3); }
+  .action-btn svg { width: 15px; height: 15px; stroke: var(--text-muted); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .action-btn.saved svg { stroke: var(--brand); fill: var(--brand); }
+
+  .hero-body { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .av-lg {
+    width: 60px; height: 60px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 22px; font-weight: 500;
+    flex-shrink: 0; border: 2px solid rgba(255,255,255,0.08);
+  }
+  .prov-name { font-family: var(--font-display); font-size: 22px; color: var(--text); margin-bottom: 4px; }
+  .prov-rubro { font-size: 13px; color: var(--text-muted); font-weight: 300; margin-bottom: 6px; }
+  .prov-zona { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-dim); }
+  .prov-zona svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* rating strip */
+  .rating-strip { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+  .r-item { flex: 1; text-align: center; }
+  .r-item:not(:last-child) { border-right: 1px solid var(--border); }
+  .r-val { font-family: var(--font-display); font-size: 22px; color: var(--text); }
+  .r-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* cta buttons */
+  .cta-row { display: flex; gap: 9px; }
+  .btn-wa { flex: 1; padding: 12px; border-radius: var(--radius); background: #25D366; color: #fff; border: none; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .btn-wa svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-pres { flex: 1; padding: 12px; border-radius: var(--radius); background: transparent; color: var(--text); border: 1px solid var(--border-md); font-family: var(--font-body); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: border-color 0.2s; }
+  .btn-pres:hover { border-color: var(--brand); }
+  .btn-pres svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); background: #151513; flex-shrink: 0; }
+  .tab { flex: 1; padding: 12px 6px; font-size: 12px; font-weight: 400; color: var(--text-muted); cursor: pointer; border: none; background: transparent; font-family: var(--font-body); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
+  .tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+  /* ── CONTENT SECTIONS ── */
+  .section { padding: 18px 20px; }
+  .sec-title { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+
+  /* descripción */
+  .desc-text { font-size: 14px; font-weight: 300; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px; }
+
+  /* rubros tags */
+  .rubros-wrap { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+  .rubro-tag { padding: 5px 12px; border-radius: 20px; font-size: 12px; background: rgba(232,103,42,0.1); border: 1px solid rgba(232,103,42,0.2); color: var(--brand); }
+
+  /* datos */
+  .datos-list { display: flex; flex-direction: column; gap: 10px; }
+  .dato { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-muted); font-weight: 300; }
+  .dato-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dato-icon svg { width: 14px; height: 14px; stroke: var(--text-dim); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── CARPETAS DE TRABAJOS ── */
+  .carpeta {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .carpeta:hover { border-color: var(--border-md); }
+
+  .carpeta-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 15px;
+    border-bottom: 1px solid var(--border);
+  }
+  .carpeta-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(232,103,42,0.1);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .carpeta-icon svg { width: 18px; height: 18px; stroke: var(--brand); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .carpeta-info { flex: 1; }
+  .carpeta-nombre { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .carpeta-meta { font-size: 11px; color: var(--text-muted); }
+  .carpeta-arrow { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transition: transform 0.25s; }
+  .carpeta-arrow svg { width: 14px; height: 14px; stroke: var(--text-dim); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .carpeta.open .carpeta-arrow { transform: rotate(90deg); }
+
+  .carpeta-fotos {
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    padding: 2px;
+  }
+  .carpeta.open .carpeta-fotos { display: grid; }
+
+  .foto-thumb {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg-card2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .foto-thumb:hover { opacity: 0.85; }
+  .foto-thumb svg { width: 22px; height: 22px; stroke: var(--text-dim); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* colores ilustrativos de fotos */
+  .f1 { background: #2A2318; }
+  .f2 { background: #18222A; }
+  .f3 { background: #1E1A28; }
+  .f4 { background: #221A1A; }
+  .f5 { background: #1A2218; }
+  .f6 { background: #28221A; }
+
+  /* ── RESEÑAS ── */
+  .review-summary {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px;
+    margin-bottom: 16px;
+  }
+  .rev-num { font-family: var(--font-display); font-size: 42px; color: var(--text); line-height: 1; }
+  .rev-stars { display: flex; gap: 3px; margin-bottom: 4px; }
+  .rev-stars svg { width: 14px; height: 14px; }
+  .rev-total { font-size: 12px; color: var(--text-muted); }
+  .rev-bars { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .rev-bar-row { display: flex; align-items: center; gap: 6px; }
+  .rev-bar-lbl { font-size: 10px; color: var(--text-dim); width: 14px; text-align: right; }
+  .rev-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .rev-bar-fill { height: 100%; background: var(--brand); border-radius: 2px; }
+  .rev-bar-n { font-size: 10px; color: var(--text-dim); width: 14px; }
+
+  .review-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .review-item:last-child { border-bottom: none; }
+  .rev-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .rev-autor { display: flex; align-items: center; gap: 8px; }
+  .rev-av { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+  .rev-nombre { font-size: 13px; font-weight: 500; color: var(--text); }
+  .rev-tipo { font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+  .tipo-arq { background: rgba(107,163,224,0.12); color: #6BA3E0; }
+  .tipo-cli { background: rgba(212,153,58,0.12); color: #D4993A; }
+  .rev-stars-row { display: flex; gap: 2px; margin-bottom: 5px; }
+  .rev-stars-row svg { width: 12px; height: 12px; }
+  .rev-fecha { font-size: 11px; color: var(--text-dim); }
+  .rev-text { font-size: 13px; color: var(--text-muted); font-weight: 300; line-height: 1.6; }
+
+  .btn-resena {
+    width: 100%; padding: 13px; border-radius: var(--radius);
+    background: var(--brand); color: #fff; border: none;
+    font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    cursor: pointer; box-shadow: 0 4px 16px var(--brand-glow);
+    margin-top: 4px;
+  }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.95);
+    z-index: 20; display: none; flex-direction: column;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .lightbox.open { display: flex; }
+  .lb-close { position: absolute; top: 50px; right: 20px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .lb-close svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .lb-img { width: 100%; aspect-ratio: 1; border-radius: var(--radius-lg); background: var(--bg-card2); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+  .lb-img svg { width: 48px; height: 48px; stroke: var(--text-dim); stroke-width: 1; fill: none; }
+  .lb-caption { font-size: 13px; color: var(--text-muted); text-align: center; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav { display: flex; border-top: 1px solid var(--border); background: #151513; flex-shrink: 0; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px 16px; cursor: pointer; border: none; background: transparent; font-family: var(--font-body); color: var(--text-dim); transition: color 0.2s; }
+  .nav-item.active { color: var(--brand); }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-label { font-size: 10px; }
+
+  @media (max-width:480px) {
+    .shell { padding: 0; min-height: 100dvh; }
+    .phone { max-width:100%; border-radius:0; border:none; box-shadow:none; max-height:100dvh; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="phone">
+
+  <!-- ── LIGHTBOX ── -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" onclick="closeLightbox()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="lb-img">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </div>
+    <p class="lb-caption" id="lbCaption">Obra Talcahuano 430 · 2025</p>
+  </div>
+
+  <!-- ════════════════════
+       PERFIL PRINCIPAL
+  ════════════════════ -->
+  <div class="view active" id="view-perfil">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-top">
+        <button class="back-btn" onclick="history.back()">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="hero-actions">
+          <button class="action-btn" onclick="shareProfile()">
+            <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          <button class="action-btn" id="heartBtn" onclick="toggleHeart()">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-body">
+        <div class="av-lg" style="background:#17243A;color:#6BA3E0;">IR</div>
+        <div>
+          <p class="prov-name">Instalaciones Romero</p>
+          <p class="prov-rubro">Electricidad · Gas · Plomería</p>
+          <p class="prov-zona">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            CABA y GBA
+          </p>
+        </div>
+      </div>
+
+      <div class="rating-strip">
+        <div class="r-item">
+          <p class="r-val" style="color:var(--brand);">4.9</p>
+          <p class="r-lbl">Calificación</p>
+        </div>
+        <div class="r-item">
+          <p class="r-val">38</p>
+          <p class="r-lbl">Reseñas</p>
+        </div>
+        <div class="r-item">
+          <p class="r-val">14</p>
+          <p class="r-lbl">Trabajos</p>
+        </div>
+        <div class="r-item">
+          <p class="r-val">12</p>
+          <p class="r-lbl">Años exp.</p>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn-wa" style="flex:1.2;">
+          <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp
+        </button>
+        <button class="btn-pres">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Mail
+        </button>
+        <button class="btn-pres">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Llamar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="setTab(0)">Sobre mí</button>
+      <button class="tab" onclick="setTab(1)">Trabajos</button>
+      <button class="tab" onclick="setTab(2)">Reseñas</button>
+    </div>
+
+    <!-- Tab content -->
+    <div class="scroll">
+
+      <!-- TAB 0: SOBRE MÍ -->
+      <div class="tab-panel" id="tab0">
+        <div class="section">
+          <p class="sec-title">Descripción</p>
+          <p class="desc-text">Empresa de instalaciones con 12 años de experiencia en obras residenciales y comerciales en CABA y GBA. Trabajamos con arquitectos, estudios y clientes particulares. Habilitados por ENRE y Metrogas.</p>
+          <div class="rubros-wrap">
+            <span class="rubro-tag">Electricidad</span>
+            <span class="rubro-tag">Gas natural</span>
+            <span class="rubro-tag">Plomería</span>
+            <span class="rubro-tag">Domótica</span>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border);"></div>
+        <div class="section">
+          <p class="sec-title">Información</p>
+          <div class="datos-list">
+            <div class="dato">
+              <div class="dato-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+              CABA y GBA
+            </div>
+            <div class="dato">
+              <div class="dato-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+              12 años de experiencia
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: TRABAJOS -->
+      <div class="tab-panel" id="tab1" style="display:none;">
+        <div class="section">
+          <p class="sec-title">Trabajos realizados · 14</p>
+
+          <div class="carpeta open" onclick="toggleCarpeta(this)">
+            <div class="carpeta-header">
+              <div class="carpeta-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+              <div class="carpeta-info">
+                <p class="carpeta-nombre">Obra Talcahuano 430</p>
+                <p class="carpeta-meta">6 fotos · Electricidad · 2025</p>
+              </div>
+              <div class="carpeta-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+            <div class="carpeta-fotos">
+              <div class="foto-thumb f1" onclick="openLightbox('Obra Talcahuano 430 · foto 1', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f2" onclick="openLightbox('Obra Talcahuano 430 · foto 2', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f3" onclick="openLightbox('Obra Talcahuano 430 · foto 3', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f4" onclick="openLightbox('Obra Talcahuano 430 · foto 4', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f5" onclick="openLightbox('Obra Talcahuano 430 · foto 5', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f6" onclick="openLightbox('Obra Talcahuano 430 · foto 6', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            </div>
+          </div>
+
+          <div class="carpeta" onclick="toggleCarpeta(this)">
+            <div class="carpeta-header">
+              <div class="carpeta-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+              <div class="carpeta-info">
+                <p class="carpeta-nombre">Casa Fernández · Palermo</p>
+                <p class="carpeta-meta">4 fotos · Electricidad y gas · 2026</p>
+              </div>
+              <div class="carpeta-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+            <div class="carpeta-fotos">
+              <div class="foto-thumb f2" onclick="openLightbox('Casa Fernández · foto 1', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f5" onclick="openLightbox('Casa Fernández · foto 2', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f3" onclick="openLightbox('Casa Fernández · foto 3', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f1" onclick="openLightbox('Casa Fernández · foto 4', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            </div>
+          </div>
+
+          <div class="carpeta" onclick="toggleCarpeta(this)">
+            <div class="carpeta-header">
+              <div class="carpeta-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+              <div class="carpeta-info">
+                <p class="carpeta-nombre">Edificio Mitre 420</p>
+                <p class="carpeta-meta">8 fotos · Instalaciones completas · 2024</p>
+              </div>
+              <div class="carpeta-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+            <div class="carpeta-fotos">
+              <div class="foto-thumb f4" onclick="openLightbox('Edificio Mitre 420 · foto 1', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f1" onclick="openLightbox('Edificio Mitre 420 · foto 2', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f6" onclick="openLightbox('Edificio Mitre 420 · foto 3', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f2" onclick="openLightbox('Edificio Mitre 420 · foto 4', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f3" onclick="openLightbox('Edificio Mitre 420 · foto 5', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f5" onclick="openLightbox('Edificio Mitre 420 · foto 6', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            </div>
+          </div>
+
+          <div class="carpeta" onclick="toggleCarpeta(this)">
+            <div class="carpeta-header">
+              <div class="carpeta-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+              <div class="carpeta-info">
+                <p class="carpeta-nombre">Depto. Laura M. · Palermo</p>
+                <p class="carpeta-meta">3 fotos · Electricidad · 2026</p>
+              </div>
+              <div class="carpeta-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+            <div class="carpeta-fotos">
+              <div class="foto-thumb f6" onclick="openLightbox('Depto. Laura M. · foto 1', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f1" onclick="openLightbox('Depto. Laura M. · foto 2', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="foto-thumb f4" onclick="openLightbox('Depto. Laura M. · foto 3', event)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 2: RESEÑAS -->
+      <div class="tab-panel" id="tab2" style="display:none;">
+        <div class="section">
+          <div class="review-summary">
+            <div style="text-align:center;">
+              <p class="rev-num">4.9</p>
+              <div class="rev-stars">
+                <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <p class="rev-total">38 reseñas</p>
+            </div>
+            <div class="rev-bars">
+              <div class="rev-bar-row"><span class="rev-bar-lbl">5</span><div class="rev-bar"><div class="rev-bar-fill" style="width:87%"></div></div><span class="rev-bar-n">33</span></div>
+              <div class="rev-bar-row"><span class="rev-bar-lbl">4</span><div class="rev-bar"><div class="rev-bar-fill" style="width:10%"></div></div><span class="rev-bar-n">4</span></div>
+              <div class="rev-bar-row"><span class="rev-bar-lbl">3</span><div class="rev-bar"><div class="rev-bar-fill" style="width:3%"></div></div><span class="rev-bar-n">1</span></div>
+              <div class="rev-bar-row"><span class="rev-bar-lbl">2</span><div class="rev-bar"><div class="rev-bar-fill" style="width:0%"></div></div><span class="rev-bar-n">0</span></div>
+              <div class="rev-bar-row"><span class="rev-bar-lbl">1</span><div class="rev-bar"><div class="rev-bar-fill" style="width:0%"></div></div><span class="rev-bar-n">0</span></div>
+            </div>
+          </div>
+
+          <div class="review-item">
+            <div class="rev-top">
+              <div class="rev-autor">
+                <div class="rev-av" style="background:#17243A;color:#6BA3E0;">AG</div>
+                <div>
+                  <p class="rev-nombre">Arq. García</p>
+                  <span class="rev-tipo tipo-arq">Arquitecto</span>
+                </div>
+              </div>
+              <span class="rev-fecha">abr 2026</span>
+            </div>
+            <div class="rev-stars-row">
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="rev-text">Excelente trabajo en instalación eléctrica y gas en la Casa Fernández. Muy prolijos, cumplieron plazos y presupuesto. Los vuelvo a contratar sin dudar.</p>
+          </div>
+
+          <div class="review-item">
+            <div class="rev-top">
+              <div class="rev-autor">
+                <div class="rev-av" style="background:#271E10;color:#D4993A;">LM</div>
+                <div>
+                  <p class="rev-nombre">Laura Martínez</p>
+                  <span class="rev-tipo tipo-cli">Cliente</span>
+                </div>
+              </div>
+              <span class="rev-fecha">mar 2026</span>
+            </div>
+            <div class="rev-stars-row">
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="rev-text">Renovaron toda la instalación eléctrica de mi departamento. Muy atentos, limpios y rápidos. 100% recomendados.</p>
+          </div>
+
+          <div class="review-item">
+            <div class="rev-top">
+              <div class="rev-autor">
+                <div class="rev-av" style="background:#17243A;color:#6BA3E0;">PL</div>
+                <div>
+                  <p class="rev-nombre">Arq. López</p>
+                  <span class="rev-tipo tipo-arq">Arquitecto</span>
+                </div>
+              </div>
+              <span class="rev-fecha">ene 2026</span>
+            </div>
+            <div class="rev-stars-row">
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#E8672A" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="rev-text">Buen trabajo en el Edificio Mitre. Algún pequeño retraso pero lo resolvieron rápido y con buena comunicación.</p>
+          </div>
+
+          <button class="btn-resena">Dejar una reseña</button>
+        </div>
+      </div>
+
+    </div><!-- /scroll -->
+
+    <!-- Bottom nav -->
+    <div class="bottom-nav">
+      <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg><span class="nav-label">Inicio</span></button>
+      <button class="nav-item active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span class="nav-label">Buscar</span></button>
+      <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="nav-label">Guardados</span></button>
+      <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nav-label">Perfil</span></button>
+    </div>
+
+  </div><!-- /view-perfil -->
+
+</div><!-- /phone -->
+</div><!-- /shell -->
+
+<script>
+// ── TABS ──
+function setTab(i) {
+  document.querySelectorAll('.tab').forEach((t,j) => t.classList.toggle('active', i===j));
+  document.querySelectorAll('.tab-panel').forEach((p,j) => p.style.display = i===j ? '' : 'none');
+}
+
+// ── CARPETAS ──
+function toggleCarpeta(el) {
+  el.classList.toggle('open');
+}
+
+// ── CORAZÓN ──
+function toggleHeart() {
+  const btn = document.getElementById('heartBtn');
+  btn.classList.toggle('saved');
+}
+
+// ── SHARE ──
+function shareProfile() {
+  if (navigator.share) {
+    navigator.share({ title: 'Instalaciones Romero en Obralink', url: window.location.href });
+  } else {
+    alert('Link copiado: obralink.com/proveedor/instalaciones-romero');
+  }
+}
+
+// ── LIGHTBOX ──
+function openLightbox(caption, e) {
+  e.stopPropagation();
+  document.getElementById('lbCaption').textContent = caption;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+</script>
+</body>
+</html>

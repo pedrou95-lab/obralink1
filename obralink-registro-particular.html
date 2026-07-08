@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink — Registro particular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232,103,42,0.22);
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245,242,236,0.45);
+    --text-dim:    rgba(245,242,236,0.2);
+    --border:      rgba(245,242,236,0.08);
+    --radius:      14px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:   'DM Sans', sans-serif;
+  }
+
+  html, body { background: var(--bg); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+  .shell { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+  .phone {
+    width: 100%; max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .phone::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 180px;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(212,153,58,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    padding: 40px 24px 36px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── BACK ── */
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: none; color: var(--text-muted);
+    font-family: var(--font-body); font-size: 14px; cursor: pointer;
+    padding: 0; margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.4s ease 0.1s forwards;
+  }
+  .back svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── HEADER ── */
+  .header {
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s forwards;
+  }
+
+  .eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #D4993A; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 7px;
+  }
+
+  .eyebrow-icon {
+    width: 22px; height: 22px; background: #D4993A;
+    border-radius: 6px; display: inline-flex;
+    align-items: center; justify-content: center;
+  }
+  .eyebrow-icon svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  .headline { font-family: var(--font-display); font-size: 32px; line-height: 1.1; color: var(--text); margin-bottom: 6px; }
+  .subhead { font-size: 14px; font-weight: 300; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── GOOGLE ── */
+  .btn-google {
+    width: 100%; padding: 13px 16px; border-radius: var(--radius);
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-body); font-size: 14px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: border-color 0.2s, background 0.2s; margin-bottom: 20px;
+    opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.25s forwards;
+  }
+  .btn-google:hover { border-color: rgba(245,242,236,0.2); background: #202020; }
+
+  /* ── DIVIDER ── */
+  .or-divider {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    opacity: 0; animation: fadeIn 0.4s ease 0.35s forwards;
+  }
+  .or-line { flex: 1; height: 1px; background: var(--border); }
+  .or-text { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ── FORM ── */
+  .form {
+    display: flex; flex-direction: column; gap: 13px;
+    opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.4s forwards;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.03em; }
+
+  .field input {
+    padding: 11px 13px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text);
+    font-family: var(--font-body); font-size: 14px; font-weight: 300;
+    outline: none; transition: border-color 0.2s;
+  }
+  .field input::placeholder { color: var(--text-dim); }
+  .field input:focus { border-color: var(--brand); }
+
+  /* ── BENEFICIOS ── */
+  .benefits {
+    display: flex; flex-direction: column; gap: 8px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 15px;
+    opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.4s forwards;
+  }
+
+  .benefit-title {
+    font-size: 12px; font-weight: 500; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;
+  }
+
+  .benefit-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 300; color: var(--text-muted); line-height: 1.4;
+  }
+
+  .benefit-icon {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .benefit-icon svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── SUBMIT ── */
+  .btn-primary {
+    width: 100%; padding: 14px; border-radius: var(--radius);
+    background: var(--brand); color: #fff; border: none;
+    font-family: var(--font-body); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 4px 20px var(--brand-glow);
+  }
+  .btn-primary:hover { background: var(--brand-dim); transform: translateY(-1px); box-shadow: 0 8px 28px var(--brand-glow); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ── LEGAL ── */
+  .legal {
+    text-align: center; font-size: 11px; color: var(--text-dim);
+    line-height: 1.6; margin-top: 16px;
+    opacity: 0; animation: fadeIn 0.5s ease 0.7s forwards;
+  }
+  .legal a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+  .login-link {
+    text-align: center; font-size: 13px; color: var(--text-muted);
+    margin-top: 16px;
+    opacity: 0; animation: fadeIn 0.5s ease 0.75s forwards;
+  }
+  .login-link button {
+    background: none; border: none; color: var(--brand);
+    font-family: var(--font-body); font-size: 13px; cursor: pointer; font-weight: 500;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+
+  @media (max-width:480px) {
+    .shell { padding: 0; }
+    .phone { max-width:100%; border-radius:0; border:none; box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="phone">
+    <div class="content">
+
+      <!-- Back -->
+      <button class="back" onclick="history.back()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+
+      <!-- Header -->
+      <div class="header">
+        <p class="eyebrow">
+          <span class="eyebrow-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg>
+          </span>
+          Cliente particular
+        </p>
+        <h1 class="headline">Creá tu cuenta</h1>
+        <p class="subhead">Gratis — encontrá proveedores de confianza en minutos</p>
+      </div>
+
+      <!-- Google -->
+      <button class="btn-google" onclick="alert('→ Login con Google')">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continuar con Google
+      </button>
+
+      <!-- Divider -->
+      <div class="or-divider">
+        <div class="or-line"></div>
+        <span class="or-text">o con email</span>
+        <div class="or-line"></div>
+      </div>
+
+      <!-- Form -->
+      <div class="form">
+        <div class="form-row">
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" placeholder="Laura">
+          </div>
+          <div class="field">
+            <label>Apellido</label>
+            <input type="text" placeholder="Martínez">
+          </div>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" placeholder="laura@email.com">
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" placeholder="Mínimo 8 caracteres">
+        </div>
+        <button class="btn-primary" onclick="alert('→ Pantalla: Home particular')">
+          Crear cuenta y entrar →
+        </button>
+      </div>
+
+      <!-- Beneficios -->
+      <div style="height:20px;"></div>
+      <div class="benefits">
+        <p class="benefit-title">¿Para qué sirve la cuenta?</p>
+        <div class="benefit-item">
+          <div class="benefit-icon" style="background:#17243A;color:#6BA3E0;">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          Buscá proveedores por rubro y zona
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon" style="background:#1A2515;color:#7DBF5D;">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          Leé reseñas verificadas de arquitectos
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon" style="background:#271E10;color:#D4993A;">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          Guardá tus proveedores favoritos
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon" style="background:#172525;color:#5DB8B8;">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          Dejá tu propia reseña después del trabajo
+        </div>
+      </div>
+
+      <!-- Legal -->
+      <p class="legal">
+        Al registrarte aceptás los <a href="#">Términos de uso</a> y la <a href="#">Política de privacidad</a>
+      </p>
+
+      <!-- Login -->
+      <p class="login-link">
+        ¿Ya tenés cuenta? <button onclick="alert('→ Pantalla: Login')">Iniciá sesión</button>
+      </p>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

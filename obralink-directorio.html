@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink — Directorio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232,103,42,0.22);
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --bg-card2:    #222220;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245,242,236,0.45);
+    --text-dim:    rgba(245,242,236,0.2);
+    --border:      rgba(245,242,236,0.07);
+    --border-md:   rgba(245,242,236,0.14);
+    --radius:      14px;
+    --radius-lg:   20px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:   'DM Sans', sans-serif;
+  }
+
+  html, body { background: var(--bg); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+  .shell { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+  .phone {
+    width: 100%; max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    display: flex; flex-direction: column;
+    max-height: 820px;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: #151513;
+    padding: 44px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .topbar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+
+  .back-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--bg-card); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .back-btn svg { width: 15px; height: 15px; stroke: var(--text-muted); stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* search box */
+  .search-box {
+    flex: 1; display: flex; align-items: center; gap: 8px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 13px;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus-within { border-color: var(--brand); }
+  .search-box svg { width: 16px; height: 16px; stroke: var(--text-dim); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .search-box input { background: none; border: none; outline: none; font-family: var(--font-body); font-size: 14px; color: var(--text); flex: 1; font-weight: 300; }
+  .search-box input::placeholder { color: var(--text-dim); }
+
+  .filter-btn {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; position: relative;
+    transition: border-color 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--brand); }
+  .filter-btn svg { width: 15px; height: 15px; stroke: var(--text-muted); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .filter-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--brand); }
+
+  /* ── CHIPS SCROLL ── */
+  .chips-row {
+    display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px;
+  }
+  .chips-row::-webkit-scrollbar { display: none; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 6px 13px; border-radius: 20px;
+    font-size: 12px; white-space: nowrap; cursor: pointer;
+    border: 1px solid var(--border); background: var(--bg-card);
+    color: var(--text-muted); font-family: var(--font-body);
+    transition: all 0.18s; flex-shrink: 0;
+  }
+  .chip.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .chip svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── RESULTS HEADER ── */
+  .results-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px 0;
+    flex-shrink: 0;
+  }
+  .results-count { font-size: 12px; color: var(--text-muted); }
+  .results-count strong { color: var(--text); font-weight: 500; }
+  .sort-btn { font-size: 12px; color: var(--brand); background: none; border: none; cursor: pointer; font-family: var(--font-body); display: flex; align-items: center; gap: 4px; }
+  .sort-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── LIST ── */
+  .list { flex: 1; overflow-y: auto; padding: 12px 20px 20px; }
+  .list::-webkit-scrollbar { width: 3px; }
+  .list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── PROVIDER CARD ── */
+  .prov-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.12s;
+  }
+  .prov-card:hover { border-color: var(--border-md); background: var(--bg-card2); transform: translateY(-1px); }
+  .prov-card:last-child { margin-bottom: 0; }
+
+  .card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+
+  .av {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 500; flex-shrink: 0;
+    font-family: var(--font-display);
+  }
+
+  .card-info { flex: 1; }
+  .card-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .card-rubro { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-bottom: 5px; }
+
+  .card-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+  .badge-ver { background: rgba(93,191,133,0.12); color: #5DBF85; }
+  .badge-prem { background: rgba(107,163,224,0.12); color: #6BA3E0; }
+  .badge-std { background: var(--border); color: var(--text-dim); }
+
+  .card-heart {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: all 0.2s;
+  }
+  .card-heart:hover { border-color: var(--brand); }
+  .card-heart.saved { background: rgba(232,103,42,0.1); border-color: rgba(232,103,42,0.3); }
+  .card-heart svg { width: 14px; height: 14px; stroke: var(--text-dim); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: all 0.2s; }
+  .card-heart.saved svg { stroke: var(--brand); fill: var(--brand); }
+
+  /* rating row */
+  .card-rating { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .stars { display: flex; gap: 2px; }
+  .stars svg { width: 12px; height: 12px; }
+  .rating-num { font-size: 13px; font-weight: 500; color: var(--text); }
+  .rating-count { font-size: 12px; color: var(--text-muted); }
+
+  /* meta row */
+  .card-meta { display: flex; align-items: center; gap: 14px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .meta-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); font-weight: 300; }
+  .meta-item svg { width: 13px; height: 13px; stroke: var(--text-dim); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+  /* ── FILTER PANEL ── */
+  .filter-panel {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: #1A1A18;
+    border-top: 1px solid var(--border-md);
+    border-radius: 24px 24px 0 0;
+    padding: 12px 20px 32px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+    z-index: 10;
+  }
+  .filter-panel.open { transform: translateY(0); }
+
+  .panel-handle { width: 36px; height: 4px; background: var(--border-md); border-radius: 2px; margin: 0 auto 20px; }
+  .panel-title { font-family: var(--font-display); font-size: 22px; color: var(--text); margin-bottom: 20px; }
+
+  .filter-section { margin-bottom: 20px; }
+  .filter-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .filter-options { display: flex; flex-wrap: wrap; gap: 7px; }
+  .fopt {
+    padding: 7px 14px; border-radius: 20px;
+    border: 1px solid var(--border); background: var(--bg-card);
+    font-size: 13px; color: var(--text-muted); cursor: pointer;
+    font-family: var(--font-body); transition: all 0.18s;
+  }
+  .fopt.sel { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+  .stars-filter { display: flex; gap: 8px; }
+  .star-opt {
+    display: flex; align-items: center; gap: 5px;
+    padding: 7px 12px; border-radius: 20px;
+    border: 1px solid var(--border); background: var(--bg-card);
+    font-size: 13px; color: var(--text-muted); cursor: pointer;
+    font-family: var(--font-body); transition: all 0.18s;
+  }
+  .star-opt.sel { border-color: var(--brand); color: var(--text); background: rgba(232,103,42,0.08); }
+
+  .panel-actions { display: flex; gap: 10px; margin-top: 8px; }
+  .btn-clear { flex: 1; padding: 13px; border-radius: var(--radius); background: transparent; color: var(--text-muted); border: 1px solid var(--border); font-family: var(--font-body); font-size: 14px; cursor: pointer; }
+  .btn-apply { flex: 2; padding: 13px; border-radius: var(--radius); background: var(--brand); color: #fff; border: none; font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; box-shadow: 0 4px 16px var(--brand-glow); }
+
+  .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 9; display: none; }
+  .overlay.open { display: block; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav { display: flex; border-top: 1px solid var(--border); background: #151513; flex-shrink: 0; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px 16px; cursor: pointer; border: none; background: transparent; font-family: var(--font-body); color: var(--text-dim); transition: color 0.2s; }
+  .nav-item.active { color: var(--brand); }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-label { font-size: 10px; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .prov-card { opacity: 0; animation: fadeUp 0.4s ease forwards; }
+  .prov-card:nth-child(1) { animation-delay: 0.05s; }
+  .prov-card:nth-child(2) { animation-delay: 0.1s; }
+  .prov-card:nth-child(3) { animation-delay: 0.15s; }
+  .prov-card:nth-child(4) { animation-delay: 0.2s; }
+  .prov-card:nth-child(5) { animation-delay: 0.25s; }
+
+  @media (max-width:480px) {
+    .shell { padding: 0; min-height: 100dvh; }
+    .phone { max-width:100%; border-radius:0; border:none; box-shadow:none; max-height:100dvh; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="phone" style="position:relative;">
+
+  <!-- overlay -->
+  <div class="overlay" id="overlay" onclick="closeFilter()"></div>
+
+  <!-- ── TOP BAR ── -->
+  <div class="topbar">
+    <div class="topbar-row">
+      <button class="back-btn" onclick="history.back()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Rubro, nombre..." id="searchInput" oninput="filterCards()">
+      </div>
+      <button class="filter-btn" onclick="openFilter()" id="filterBtn">
+        <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="chips-row" id="chipsRow">
+      <button class="chip active" onclick="setChip(this,'todos')">Todos</button>
+      <button class="chip" onclick="setChip(this,'electricidad')">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Electricidad
+      </button>
+      <button class="chip" onclick="setChip(this,'plomeria')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+        Plomería
+      </button>
+      <button class="chip" onclick="setChip(this,'estructura')">
+        <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>
+        Estructura
+      </button>
+      <button class="chip" onclick="setChip(this,'pintura')">
+        <svg viewBox="0 0 24 24"><path d="M2 20l4-4 12-12 4 4L10 20H2z"/></svg>
+        Pintura
+      </button>
+      <button class="chip" onclick="setChip(this,'carpinteria')">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="7" height="18" rx="1"/><rect x="15" y="3" width="7" height="11" rx="1"/></svg>
+        Carpintería
+      </button>
+      <button class="chip" onclick="setChip(this,'yeseria')">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Yesería
+      </button>
+    </div>
+  </div>
+
+  <!-- results header -->
+  <div class="results-header">
+    <p class="results-count"><strong id="countNum">6</strong> proveedores · CABA y GBA</p>
+    <button class="sort-btn">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="9" y2="18"/></svg>
+      Mejor calificados
+    </button>
+  </div>
+
+  <!-- ── LIST ── -->
+  <div class="list" id="provList">
+
+    <!-- Card 1 -->
+    <div class="prov-card" data-rubro="electricidad" data-zona="caba" data-rating="5">
+      <div class="card-top">
+        <div class="av" style="background:#17243A;color:#6BA3E0;">IR</div>
+        <div class="card-info">
+          <p class="card-name">Instalaciones Romero</p>
+          <p class="card-rubro">Electricidad · Gas · Plomería</p>
+        </div>
+        <button class="card-heart saved" onclick="toggleHeart(this)">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="card-rating">
+        <div class="stars">
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span class="rating-num">4.9</span>
+        <span class="rating-count">· 38 reseñas</span>
+      </div>
+      <div class="card-meta">
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>CABA y GBA</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>12 años de exp.</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>14 trabajos</div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="prov-card" data-rubro="estructura" data-zona="gba-sur" data-rating="4">
+      <div class="card-top">
+        <div class="av" style="background:#1A2515;color:#7DBF5D;">HD</div>
+        <div class="card-info">
+          <p class="card-name">Hormigones del Sur</p>
+          <p class="card-rubro">Estructura · Hormigón elaborado</p>
+          
+        </div>
+        <button class="card-heart" onclick="toggleHeart(this)">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="card-rating">
+        <div class="stars">
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E8672A" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span class="rating-num">4.3</span>
+        <span class="rating-count">· 21 reseñas</span>
+      </div>
+      <div class="card-meta">
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>GBA Sur</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>8 años de exp.</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>21 trabajos</div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="prov-card" data-rubro="carpinteria" data-zona="caba" data-rating="5">
+      <div class="card-top">
+        <div class="av" style="background:#25171A;color:#D47A8A;">CD</div>
+        <div class="card-info">
+          <p class="card-name">Carpintería Díaz</p>
+          <p class="card-rubro">Carpintería · Aberturas · Muebles</p>
+          
+        </div>
+        <button class="card-heart" onclick="toggleHeart(this)">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="card-rating">
+        <div class="stars">
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span class="rating-num">4.7</span>
+        <span class="rating-count">· 15 reseñas</span>
+      </div>
+      <div class="card-meta">
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>CABA</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>6 años de exp.</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>9 trabajos</div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="prov-card" data-rubro="pintura" data-zona="gba-norte" data-rating="4">
+      <div class="card-top">
+        <div class="av" style="background:#271E10;color:#D4993A;">PM</div>
+        <div class="card-info">
+          <p class="card-name">Pinturería Morales</p>
+          <p class="card-rubro">Pintura · Revestimientos</p>
+          
+        </div>
+        <button class="card-heart" onclick="toggleHeart(this)">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="card-rating">
+        <div class="stars">
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E8672A" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span class="rating-num">4.1</span>
+        <span class="rating-count">· 8 reseñas</span>
+      </div>
+      <div class="card-meta">
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>GBA Norte</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>5 años de exp.</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>7 trabajos</div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="prov-card" data-rubro="plomeria" data-zona="caba" data-rating="5">
+      <div class="card-top">
+        <div class="av" style="background:#17252A;color:#5BB8D4;">PS</div>
+        <div class="card-info">
+          <p class="card-name">Plomería Suárez</p>
+          <p class="card-rubro">Plomería · Sanitarios · Gas</p>
+          
+        </div>
+        <button class="card-heart" onclick="toggleHeart(this)">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="card-rating">
+        <div class="stars">
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span class="rating-num">4.8</span>
+        <span class="rating-count">· 11 reseñas</span>
+      </div>
+      <div class="card-meta">
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>CABA</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>9 años de exp.</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>12 trabajos</div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="prov-card" data-rubro="yeseria" data-zona="gba-oeste" data-rating="4">
+      <div class="card-top">
+        <div class="av" style="background:#20201A;color:#C4B87A;">YF</div>
+        <div class="card-info">
+          <p class="card-name">Yesería Fernández</p>
+          <p class="card-rubro">Yesería · Cielorrasos · Molduras</p>
+          
+        </div>
+        <button class="card-heart" onclick="toggleHeart(this)">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="card-rating">
+        <div class="stars">
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E8672A"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E8672A" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span class="rating-num">4.0</span>
+        <span class="rating-count">· 6 reseñas</span>
+      </div>
+      <div class="card-meta">
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>GBA Oeste</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>4 años de exp.</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>5 trabajos</div>
+      </div>
+    </div>
+
+  </div><!-- /list -->
+
+  <!-- ── FILTER PANEL ── -->
+  <div class="filter-panel" id="filterPanel">
+    <div class="panel-handle"></div>
+    <p class="panel-title">Filtros</p>
+
+    <div class="filter-section">
+      <p class="filter-label">Zona</p>
+      <div class="filter-options">
+        <button class="fopt sel" onclick="this.classList.toggle('sel')">CABA</button>
+        <button class="fopt" onclick="this.classList.toggle('sel')">GBA Norte</button>
+        <button class="fopt" onclick="this.classList.toggle('sel')">GBA Sur</button>
+        <button class="fopt" onclick="this.classList.toggle('sel')">GBA Oeste</button>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <p class="filter-label">Calificación mínima</p>
+      <div class="stars-filter">
+        <button class="star-opt" onclick="selStar(this)">⭐ 3+</button>
+        <button class="star-opt sel" onclick="selStar(this)">⭐ 4+</button>
+        <button class="star-opt" onclick="selStar(this)">⭐ 4.5+</button>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <p class="filter-label">Plan</p>
+      <div class="filter-options">
+        <button class="fopt" onclick="this.classList.toggle('sel')">Verificado</button>
+        <button class="fopt" onclick="this.classList.toggle('sel')">Premium</button>
+        <button class="fopt" onclick="this.classList.toggle('sel')">Estándar</button>
+      </div>
+    </div>
+
+    <div class="panel-actions">
+      <button class="btn-clear" onclick="closeFilter()">Limpiar</button>
+      <button class="btn-apply" onclick="closeFilter()">Ver resultados</button>
+    </div>
+  </div>
+
+  <!-- ── BOTTOM NAV ── -->
+  <div class="bottom-nav">
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg><span class="nav-label">Inicio</span></button>
+    <button class="nav-item active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span class="nav-label">Buscar</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="nav-label">Guardados</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nav-label">Perfil</span></button>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── CHIPS ──
+function setChip(el, rubro) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterCards();
+}
+
+// ── CORAZÓN ──
+function toggleHeart(btn) {
+  btn.classList.toggle('saved');
+  event.stopPropagation();
+}
+
+// ── FILTRO PANEL ──
+function openFilter() {
+  document.getElementById('filterPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeFilter() {
+  document.getElementById('filterPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function selStar(el) {
+  document.querySelectorAll('.star-opt').forEach(s => s.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ── BÚSQUEDA ──
+function filterCards() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const activeChip = document.querySelector('.chip.active');
+  const rubro = activeChip ? activeChip.getAttribute('onclick').match(/'([^']+)'/)?.[1] : 'todos';
+  const cards = document.querySelectorAll('.prov-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const nombre = card.querySelector('.card-name').textContent.toLowerCase();
+    const cardRubro = card.dataset.rubro;
+    const matchQ = !q || nombre.includes(q) || cardRubro.includes(q);
+    const matchR = !rubro || rubro === 'todos' || cardRubro === rubro;
+    const show = matchQ && matchR;
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  document.getElementById('countNum').textContent = visible;
+}
+</script>
+</body>
+</html>

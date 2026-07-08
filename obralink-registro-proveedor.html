@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink — Registro proveedor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232,103,42,0.22);
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245,242,236,0.45);
+    --text-dim:    rgba(245,242,236,0.2);
+    --border:      rgba(245,242,236,0.08);
+    --border-sel:  rgba(232,103,42,0.6);
+    --radius:      14px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:   'DM Sans', sans-serif;
+  }
+
+  html, body { background: var(--bg); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+  .shell { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+  .phone {
+    width: 100%; max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .phone::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 180px;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(93,191,133,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── STEPS ── */
+  .step { display: none; position: relative; z-index: 1; padding: 40px 24px 36px; flex-direction: column; }
+  .step.active { display: flex; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease 0.1s forwards;
+  }
+  .progress-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--brand); border-radius: 2px; transition: width 0.4s ease; }
+  .progress-label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+
+  /* ── BACK ── */
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: none; color: var(--text-muted);
+    font-family: var(--font-body); font-size: 14px; cursor: pointer;
+    padding: 0; margin-bottom: 24px;
+    opacity: 0; animation: fadeUp 0.4s ease 0.1s forwards;
+  }
+  .back svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── HEADER ── */
+  .header { margin-bottom: 24px; opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s forwards; }
+  .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #5DBF85; margin-bottom: 8px; }
+  .headline { font-family: var(--font-display); font-size: 30px; line-height: 1.1; color: var(--text); margin-bottom: 5px; }
+  .subhead { font-size: 13px; font-weight: 300; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── FORM ── */
+  .form { display: flex; flex-direction: column; gap: 13px; opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.25s forwards; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.03em; }
+  .field input, .field select, .field textarea {
+    padding: 11px 13px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text);
+    font-family: var(--font-body); font-size: 14px; font-weight: 300;
+    outline: none; transition: border-color 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: var(--text-dim); }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brand); }
+  .field textarea { resize: none; line-height: 1.5; }
+  .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(245,242,236,0.3)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .opt-label { font-size: 11px; color: var(--text-dim); font-weight: 300; }
+
+  /* ── DROPDOWN MULTISELECCIÓN ── */
+  .dropdown-wrap { position: relative; }
+
+  .dropdown-btn {
+    width: 100%;
+    padding: 11px 13px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    transition: border-color 0.2s;
+  }
+  .dropdown-btn:hover { border-color: rgba(245,242,236,0.18); }
+  .dropdown-btn.open { border-color: var(--brand); border-radius: 10px 10px 0 0; }
+  .dropdown-btn svg { width: 14px; height: 14px; stroke: var(--text-dim); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; flex-shrink: 0; }
+  .dropdown-btn.open svg { transform: rotate(180deg); }
+
+  .dropdown-menu {
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--brand);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .dropdown-menu.open { display: block; }
+  .dropdown-menu::-webkit-scrollbar { width: 4px; }
+  .dropdown-menu::-webkit-scrollbar-track { background: transparent; }
+  .dropdown-menu::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .dropdown-item:last-child { border-bottom: none; }
+  .dropdown-item:hover { background: #202020; }
+  .dropdown-item.sel { color: var(--text); background: #1F1510; }
+
+  .item-check {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .item-check svg { width: 10px; height: 10px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; display: none; }
+  .dropdown-item.sel .item-check { background: var(--brand); border-color: var(--brand); }
+  .dropdown-item.sel .item-check svg { display: block; }
+
+  /* tags */
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 0; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px;
+    background: rgba(232,103,42,0.15);
+    border: 1px solid rgba(232,103,42,0.3);
+    border-radius: 20px;
+    font-size: 12px; color: var(--brand);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .tag:hover { background: rgba(232,103,42,0.25); }
+  .tag svg { width: 11px; height: 11px; stroke: var(--brand); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── RUBRO GRID (eliminar si quedó) ── */
+  .rubro-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .rubro-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 12px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+  }
+  .rubro-item:hover { border-color: rgba(245,242,236,0.15); background: #202020; }
+  .rubro-item.sel { border-color: var(--brand); background: #1F1510; }
+  .rubro-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .rubro-icon svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .rubro-name { font-size: 12px; font-weight: 400; color: var(--text); }
+
+  /* ── ZONA ITEMS ── */
+  .zona-list { display: flex; flex-direction: column; gap: 8px; }
+  .zona-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+  }
+  .zona-item:hover { border-color: rgba(245,242,236,0.15); background: #202020; }
+  .zona-item.sel { border-color: var(--brand); background: #1F1510; }
+  .zona-name { font-size: 14px; color: var(--text); }
+  .zona-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.18s; }
+  .zona-item.sel .zona-check { background: var(--brand); border-color: var(--brand); }
+  .zona-check svg { width: 11px; height: 11px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; display: none; }
+  .zona-item.sel .zona-check svg { display: block; }
+
+  /* ── PLAN CARD ── */
+  .plan-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 18px 16px; margin-bottom: 4px;
+    opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.25s forwards;
+  }
+  .plan-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .plan-name { font-size: 16px; font-weight: 500; color: var(--text); }
+  .plan-price { text-align: right; }
+  .plan-amount { font-family: var(--font-display); font-size: 26px; color: var(--text); }
+  .plan-period { font-size: 12px; color: var(--text-muted); }
+  .plan-features { display: flex; flex-direction: column; gap: 8px; }
+  .plan-feature { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-muted); font-weight: 300; }
+  .feat-check { width: 18px; height: 18px; border-radius: 50%; background: rgba(93,191,133,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .feat-check svg { width: 10px; height: 10px; stroke: #5DBF85; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    width: 100%; padding: 14px; border-radius: var(--radius);
+    background: var(--brand); color: #fff; border: none;
+    font-family: var(--font-body); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 4px 20px var(--brand-glow);
+  }
+  .btn-primary:hover { background: var(--brand-dim); transform: translateY(-1px); box-shadow: 0 8px 28px var(--brand-glow); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-mp {
+    width: 100%; padding: 14px; border-radius: var(--radius);
+    background: #009EE3; color: #fff; border: none;
+    font-family: var(--font-body); font-size: 15px; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px;
+    transition: background 0.18s, transform 0.12s;
+    box-shadow: 0 4px 20px rgba(0,158,227,0.25);
+    opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.4s forwards;
+  }
+  .btn-mp:hover { background: #007BB5; transform: translateY(-1px); }
+
+  /* ── LEGAL ── */
+  .legal { text-align: center; font-size: 11px; color: var(--text-dim); line-height: 1.6; margin-top: 14px; opacity: 0; animation: fadeIn 0.5s ease 0.6s forwards; }
+  .legal a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+
+  @media (max-width:480px) {
+    .shell { padding: 0; }
+    .phone { max-width:100%; border-radius:0; border:none; box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="phone">
+
+    <!-- ══ PASO 1: DATOS BÁSICOS ══ -->
+    <div class="step active" id="paso1">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+        <span class="progress-label">Paso 1 de 3</span>
+      </div>
+      <button class="back" onclick="history.back()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+      <div class="header">
+        <p class="eyebrow">Proveedor</p>
+        <h1 class="headline">Tu perfil público</h1>
+        <p class="subhead">Esto es lo que verán los clientes</p>
+      </div>
+      <div class="form">
+        <div class="form-row">
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" placeholder="Miguel">
+          </div>
+          <div class="field">
+            <label>Apellido</label>
+            <input type="text" placeholder="Romero">
+          </div>
+        </div>
+        <div class="field">
+          <label>Nombre comercial <span class="opt-label">(opcional)</span></label>
+          <input type="text" placeholder="Instalaciones Romero">
+        </div>
+        <div class="field">
+          <label>WhatsApp de contacto</label>
+          <input type="tel" placeholder="+54 9 11 0000-0000">
+        </div>
+        <div class="field">
+          <label>Rubros <span class="opt-label">(podés elegir varios)</span></label>
+          <div class="dropdown-wrap" id="rubroDropdown">
+            <button type="button" class="dropdown-btn" onclick="toggleDropdown()">
+              <span id="dropdownLabel">Seleccioná tus rubros</span>
+              <svg viewBox="0 0 24 24" id="dropdownArrow"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dropdown-menu" id="dropdownMenu">
+              <div class="dropdown-item" onclick="toggleRubro(this,'Electricidad')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Electricidad</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Plomería')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Plomería</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Estructura')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Estructura</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Pintura')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Pintura</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Carpintería')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Carpintería</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Yesería')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Yesería</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Herrería')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Herrería</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Gas')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Gas</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Aire acondicionado')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Aire acondicionado</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Pisos y revestimientos')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Pisos y revestimientos</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Impermeabilización')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Impermeabilización</span></div>
+              <div class="dropdown-item" onclick="toggleRubro(this,'Materiales')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Materiales</span></div>
+            </div>
+          </div>
+          <div class="tags-wrap" id="tagsWrap"></div>
+        </div>
+        <button class="btn-primary" onclick="irA('paso2')">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ══ PASO 2: ZONA + CUENTA ══ -->
+    <div class="step" id="paso2">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+        <span class="progress-label">Paso 2 de 3</span>
+      </div>
+      <button class="back" onclick="irA('paso1')">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+      <div class="header">
+        <p class="eyebrow">Proveedor</p>
+        <h1 class="headline">Zona y cuenta</h1>
+        <p class="subhead">Dónde trabajás y cómo vas a ingresar</p>
+      </div>
+      <div class="form">
+        <div class="field">
+          <label>Zona de trabajo</label>
+          <div class="zona-list">
+            <div class="zona-item sel" onclick="selZona(this)">
+              <span class="zona-name">CABA</span>
+              <div class="zona-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div class="zona-item" onclick="selZona(this)">
+              <span class="zona-name">GBA Norte</span>
+              <div class="zona-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div class="zona-item" onclick="selZona(this)">
+              <span class="zona-name">GBA Sur</span>
+              <div class="zona-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div class="zona-item" onclick="selZona(this)">
+              <span class="zona-name">GBA Oeste</span>
+              <div class="zona-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Descripción breve <span class="opt-label">(opcional)</span></label>
+          <textarea rows="2" placeholder="Contá qué hacés y cuántos años de experiencia tenés..."></textarea>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" placeholder="miguel@email.com">
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" placeholder="Mínimo 8 caracteres">
+        </div>
+        <button class="btn-primary" onclick="irA('paso3')">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ══ PASO 3: PAGO ══ -->
+    <div class="step" id="paso3">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:99%"></div></div>
+        <span class="progress-label">Paso 3 de 3</span>
+      </div>
+      <button class="back" onclick="irA('paso2')">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+      <div class="header">
+        <p class="eyebrow">Proveedor</p>
+        <h1 class="headline">Activá tu perfil</h1>
+        <p class="subhead">Último paso — empezás a recibir clientes hoy</p>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-top">
+          <div>
+            <p class="plan-name">Plan Estándar</p>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:3px;">Cancelable cuando quieras</p>
+          </div>
+          <div class="plan-price">
+            <p class="plan-amount">$15.000</p>
+            <p class="plan-period">ARS / mes</p>
+          </div>
+        </div>
+        <div class="plan-features">
+          <div class="plan-feature">
+            <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Perfil público con fotos y reseñas
+          </div>
+          <div class="plan-feature">
+            <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Contacto directo por WhatsApp
+          </div>
+          <div class="plan-feature">
+            <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Aparecés en búsquedas de tu rubro y zona
+          </div>
+          <div class="plan-feature">
+            <div class="feat-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Estadísticas de visitas a tu perfil
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-mp" onclick="alert('→ Pago con MercadoPago')">
+        <svg width="20" height="20" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <circle cx="20" cy="20" r="20" fill="#009EE3"/>
+          <path d="M10 20.5c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="20" cy="20.5" r="3" fill="#fff"/>
+        </svg>
+        Pagar con MercadoPago
+      </button>
+
+      <p class="legal">
+        Pago seguro · Se renueva automáticamente cada mes<br>
+        Cancelable desde tu perfil · <a href="#">Ver términos</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function irA(id) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector('.phone').scrollTop = 0;
+}
+
+// ── DROPDOWN MULTISELECCIÓN ──
+let rubrosSeleccionados = [];
+
+function toggleDropdown() {
+  const btn  = document.querySelector('.dropdown-btn');
+  const menu = document.getElementById('dropdownMenu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+
+function toggleRubro(el, nombre) {
+  el.classList.toggle('sel');
+  if (el.classList.contains('sel')) {
+    rubrosSeleccionados.push(nombre);
+  } else {
+    rubrosSeleccionados = rubrosSeleccionados.filter(r => r !== nombre);
+  }
+  actualizarLabel();
+  actualizarTags();
+}
+
+function actualizarLabel() {
+  const label = document.getElementById('dropdownLabel');
+  if (rubrosSeleccionados.length === 0) {
+    label.textContent = 'Seleccioná tus rubros';
+    label.style.color = 'var(--text-dim)';
+  } else {
+    label.textContent = rubrosSeleccionados.length === 1
+      ? rubrosSeleccionados[0]
+      : rubrosSeleccionados.length + ' rubros seleccionados';
+    label.style.color = 'var(--text)';
+  }
+}
+
+function actualizarTags() {
+  const wrap = document.getElementById('tagsWrap');
+  wrap.innerHTML = '';
+  rubrosSeleccionados.forEach(nombre => {
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = `${nombre}<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+    tag.onclick = () => quitarRubro(nombre);
+    wrap.appendChild(tag);
+  });
+}
+
+function quitarRubro(nombre) {
+  rubrosSeleccionados = rubrosSeleccionados.filter(r => r !== nombre);
+  // desmarcar en el menú
+  document.querySelectorAll('.dropdown-item').forEach(el => {
+    if (el.querySelector('span').textContent === nombre) el.classList.remove('sel');
+  });
+  actualizarLabel();
+  actualizarTags();
+}
+
+function selZona(el) {
+  el.classList.toggle('sel');
+}
+
+// cerrar dropdown al click afuera
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('rubroDropdown');
+  if (wrap && !wrap.contains(e.target)) {
+    document.querySelector('.dropdown-btn')?.classList.remove('open');
+    document.getElementById('dropdownMenu')?.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>

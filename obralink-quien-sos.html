@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink — ¿Quién sos?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:        #E8672A;
+    --brand-dim:    #C04E18;
+    --brand-glow:   rgba(232,103,42,0.22);
+    --bg:           #111110;
+    --bg-card:      #1C1C1A;
+    --text:         #F5F2EC;
+    --text-muted:   rgba(245,242,236,0.45);
+    --text-dim:     rgba(245,242,236,0.2);
+    --border:       rgba(245,242,236,0.08);
+    --border-hover: rgba(245,242,236,0.18);
+    --radius:       16px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body:    'DM Sans', sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* shell centers phone on desktop */
+  .shell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  /* top glow */
+  .phone::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 200px;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,103,42,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* content fills phone naturally — no fixed height */
+  .content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 24px 36px;
+    gap: 0;
+  }
+
+  /* ── BACK ── */
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s forwards;
+  }
+  .back svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── HEADER ── */
+  .header {
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s forwards;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 8px;
+  }
+
+  .headline {
+    font-family: var(--font-display);
+    font-size: 34px;
+    line-height: 1.1;
+    color: var(--text);
+  }
+
+  /* ── CARDS ── */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .profile-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 15px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: border-color 0.2s, background 0.2s, transform 0.12s;
+    opacity: 0;
+  }
+
+  .profile-card:nth-child(1) { animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.3s forwards; }
+  .profile-card:nth-child(2) { animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.4s forwards; }
+  .profile-card:nth-child(3) { animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.5s forwards; }
+
+  .profile-card:hover  { border-color: var(--border-hover); background: #202020; transform: translateY(-1px); }
+  .profile-card:active { transform: translateY(0); }
+
+  .profile-card.selected {
+    border-color: var(--brand);
+    background: #1F1510;
+  }
+  .profile-card.selected .arrow { color: var(--brand); transform: translateX(3px); }
+
+  /* icon box */
+  .icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .icon-box svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* card text */
+  .card-body    { flex: 1; }
+  .card-title   { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .card-sub     { font-size: 12px; font-weight: 300; color: var(--text-muted); line-height: 1.4; }
+
+  /* arrow */
+  .arrow { color: var(--text-dim); flex-shrink: 0; transition: color 0.2s, transform 0.2s; }
+  .arrow svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .profile-card:hover .arrow { color: var(--text-muted); transform: translateX(2px); }
+
+  /* ── FOOTER ── */
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeIn 0.6s ease 0.7s forwards;
+  }
+  .footer-note strong { color: var(--text-muted); font-weight: 400; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* full screen on mobile */
+  @media (max-width: 480px) {
+    .shell { padding: 0; }
+    .phone { max-width: 100%; border-radius: 0; border: none; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="phone">
+    <div class="content">
+
+      <!-- Back -->
+      <button class="back" onclick="history.back()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+
+      <!-- Header -->
+      <div class="header">
+        <p class="eyebrow">Bienvenido a Obralink</p>
+        <h1 class="headline">¿Cómo vas a<br>usar la app?</h1>
+      </div>
+
+      <!-- Cards -->
+      <div class="cards">
+
+        <button class="profile-card" onclick="elegir(this,'arquitecto')">
+          <div class="icon-box" style="background:#17243A;color:#6BA3E0;">
+            <svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 9h1m4 0h1M9 13h1m4 0h1"/></svg>
+          </div>
+          <div class="card-body">
+            <p class="card-title">Soy arquitecto / ingeniero</p>
+            <p class="card-sub">Gestiono obras y busco proveedores</p>
+          </div>
+          <div class="arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </button>
+
+        <button class="profile-card" onclick="elegir(this,'proveedor')">
+          <div class="icon-box" style="background:#172518;color:#5DBF85;">
+            <svg viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          </div>
+          <div class="card-body">
+            <p class="card-title">Soy proveedor</p>
+            <p class="card-sub">Quiero mostrar mi trabajo o producto y conseguir clientes</p>
+          </div>
+          <div class="arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </button>
+
+        <button class="profile-card" onclick="elegir(this,'cliente')">
+          <div class="icon-box" style="background:#271E10;color:#D4993A;">
+            <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg>
+          </div>
+          <div class="card-body">
+            <p class="card-title">Soy particular</p>
+            <p class="card-sub">Necesito un proveedor para un arreglo en mi casa</p>
+          </div>
+          <div class="arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </button>
+
+      </div>
+
+      <!-- Footer -->
+      <p class="footer-note">Podés cambiar tu perfil en cualquier momento<br>desde <strong>Configuración</strong></p>
+
+    </div>
+  </div>
+</div>
+<script>
+function elegir(card, tipo) {
+  document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  setTimeout(() => {
+    alert('→ Registro ' + tipo);
+  }, 220);
+}
+</script>
+</body>
+</html>

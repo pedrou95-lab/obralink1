@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink — Registro arquitecto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232,103,42,0.22);
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245,242,236,0.45);
+    --text-dim:    rgba(245,242,236,0.2);
+    --border:      rgba(245,242,236,0.08);
+    --border-focus:rgba(232,103,42,0.6);
+    --radius:      14px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:   'DM Sans', sans-serif;
+  }
+
+  html, body {
+    background: var(--bg);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .phone::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 180px;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,103,42,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    padding: 40px 24px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── BACK ── */
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease 0.1s forwards;
+  }
+  .back svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── HEADER ── */
+  .header {
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s forwards;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .eyebrow-icon {
+    width: 22px;
+    height: 22px;
+    background: var(--brand);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .eyebrow-icon svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  .headline {
+    font-family: var(--font-display);
+    font-size: 32px;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .subhead {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ── GOOGLE BTN ── */
+  .btn-google {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.25s forwards;
+  }
+  .btn-google:hover { border-color: var(--border-focus); background: #202020; }
+
+  /* ── DIVIDER ── */
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeIn 0.4s ease 0.35s forwards;
+  }
+  .or-line { flex: 1; height: 1px; background: var(--border); }
+  .or-text { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ── FORM ── */
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.4s forwards;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+  }
+
+  .field input, .field select {
+    padding: 11px 13px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field input::placeholder { color: var(--text-dim); }
+  .field input:focus, .field select:focus { border-color: var(--brand); }
+
+  .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(245,242,236,0.3)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+  /* ── SUBMIT ── */
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius);
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 4px 20px var(--brand-glow);
+    margin-top: 4px;
+  }
+  .btn-primary:hover { background: var(--brand-dim); transform: translateY(-1px); box-shadow: 0 8px 28px var(--brand-glow); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ── LEGAL ── */
+  .legal {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-top: 16px;
+    opacity: 0;
+    animation: fadeIn 0.5s ease 0.7s forwards;
+  }
+  .legal a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ── LOGIN LINK ── */
+  .login-link {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 20px;
+    opacity: 0;
+    animation: fadeIn 0.5s ease 0.75s forwards;
+  }
+  .login-link button {
+    background: none;
+    border: none;
+    color: var(--brand);
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @media (max-width: 480px) {
+    .shell { padding: 0; }
+    .phone { max-width: 100%; border-radius: 0; border: none; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="phone">
+    <div class="content">
+
+      <!-- Back -->
+      <button class="back" onclick="history.back()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+
+      <!-- Header -->
+      <div class="header">
+        <p class="eyebrow">
+          <span class="eyebrow-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+          </span>
+          Arquitecto / Ingeniero
+        </p>
+        <h1 class="headline">Creá tu cuenta</h1>
+        <p class="subhead">Gratis, sin tarjeta de crédito</p>
+      </div>
+
+      <!-- Google -->
+      <button class="btn-google" onclick="alert('→ Login con Google')">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continuar con Google
+      </button>
+
+      <!-- Divider -->
+      <div class="or-divider">
+        <div class="or-line"></div>
+        <span class="or-text">o con email</span>
+        <div class="or-line"></div>
+      </div>
+
+      <!-- Form -->
+      <div class="form">
+        <div class="form-row">
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" placeholder="Juan">
+          </div>
+          <div class="field">
+            <label>Apellido</label>
+            <input type="text" placeholder="García">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email profesional</label>
+          <input type="email" placeholder="juan@estudio.com">
+        </div>
+
+        <div class="field">
+          <label>Nombre del estudio <span style="color:var(--text-dim);font-weight:300;">(opcional)</span></label>
+          <input type="text" placeholder="Estudio García & Asociados">
+        </div>
+
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" placeholder="Mínimo 8 caracteres">
+        </div>
+
+        <div class="field">
+          <label>Profesión</label>
+          <select>
+            <option value="" disabled selected>Seleccioná tu profesión</option>
+            <option>Arquitecto</option>
+            <option>Ingeniero civil</option>
+            <option>Ingeniero estructural</option>
+            <option>Director de obra</option>
+            <option>Constructor</option>
+            <option>Otro</option>
+          </select>
+        </div>
+
+        <button class="btn-primary" onclick="alert('→ Pantalla: Home arquitecto')">
+          Crear cuenta y entrar →
+        </button>
+      </div>
+
+      <!-- Legal -->
+      <p class="legal">
+        Al registrarte aceptás los <a href="#">Términos de uso</a><br>y la <a href="#">Política de privacidad</a> de Obralink
+      </p>
+
+      <!-- Login -->
+      <p class="login-link">
+        ¿Ya tenés cuenta? <button onclick="alert('→ Pantalla: Login')">Iniciá sesión</button>
+      </p>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

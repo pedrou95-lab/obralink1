@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232,103,42,0.22);
+    --green:       #5DBF85;
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --bg-card2:    #222220;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245,242,236,0.45);
+    --text-dim:    rgba(245,242,236,0.2);
+    --border:      rgba(245,242,236,0.07);
+    --border-md:   rgba(245,242,236,0.12);
+    --radius:      14px;
+    --radius-lg:   20px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:   'DM Sans', sans-serif;
+  }
+
+  html, body {
+    background: #0C0C0B;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    height: 100%;
+  }
+
+  /* ── SHELL ── */
+  .shell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+    min-height: 780px;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; flex-direction: column; min-height: 780px; }
+  .screen.active { display: flex; }
+
+  /* ── SHARED STYLES ── */
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: none; color: var(--text-muted);
+    font-family: var(--font-body); font-size: 14px; cursor: pointer; padding: 0;
+  }
+  .back-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  .badge { font-size: 10px; padding: 3px 9px; border-radius: 20px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+  .badge-green { background: rgba(93,191,133,0.15); color: #5DBF85; }
+  .badge-amber { background: rgba(212,153,58,0.15); color: #D4993A; }
+  .badge-blue  { background: rgba(107,163,224,0.15); color: #6BA3E0; }
+  .badge-brand { background: rgba(232,103,42,0.15); color: var(--brand); }
+
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .sec-title { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .sec-link { font-size: 12px; color: var(--brand); cursor: pointer; background: none; border: none; font-family: var(--font-body); }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 13px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.03em; }
+  .field input, .field select, .field textarea {
+    padding: 11px 13px; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); font-family: var(--font-body);
+    font-size: 14px; font-weight: 300; outline: none; transition: border-color 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: var(--text-dim); }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brand); }
+  .field textarea { resize: none; line-height: 1.5; }
+  .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(245,242,236,0.3)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn-primary {
+    width: 100%; padding: 14px; border-radius: var(--radius);
+    background: var(--brand); color: #fff; border: none;
+    font-family: var(--font-body); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: background 0.18s, transform 0.12s;
+    box-shadow: 0 4px 20px var(--brand-glow); margin-top: 4px;
+  }
+  .btn-primary:hover { background: var(--brand-dim); transform: translateY(-1px); }
+
+  .btn-google {
+    width: 100%; padding: 13px 16px; border-radius: var(--radius);
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-body); font-size: 14px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: border-color 0.2s; margin-bottom: 20px;
+  }
+  .btn-google:hover { border-color: var(--border-md); }
+
+  .or-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .or-line { flex: 1; height: 1px; background: var(--border); }
+  .or-text { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .legal { text-align: center; font-size: 11px; color: var(--text-dim); line-height: 1.6; margin-top: 16px; }
+  .legal a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+  .login-link { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 14px; }
+  .login-link button { background: none; border: none; color: var(--brand); font-family: var(--font-body); font-size: 13px; cursor: pointer; font-weight: 500; }
+
+  .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+  .headline { font-family: var(--font-display); line-height: 1.1; color: var(--text); margin-bottom: 6px; }
+  .subhead { font-size: 14px; font-weight: 300; color: var(--text-muted); line-height: 1.5; }
+
+  /* progress bar (wizard) */
+  .progress-wrap { display: flex; align-items: center; gap: 6px; margin-bottom: 24px; }
+  .progress-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--brand); border-radius: 2px; }
+  .progress-label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+
+  /* bottom nav */
+  .bottom-nav { display: flex; border-top: 1px solid var(--border); background: #151513; margin-top: auto; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px 16px; cursor: pointer; border: none; background: transparent; font-family: var(--font-body); color: var(--text-dim); transition: color 0.2s; }
+  .nav-item.active { color: var(--brand); }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-label { font-size: 10px; }
+
+  /* cards */
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+  .card:hover { border-color: var(--border-md); background: var(--bg-card2); }
+
+  /* prog bar obra */
+  .prog-wrap-obra { margin-top: 10px; }
+  .prog-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
+  .prog-bar-obra { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .prog-fill-obra { height: 100%; border-radius: 2px; }
+
+  /* zona items */
+  .zona-list { display: flex; flex-direction: column; gap: 8px; }
+  .zona-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: border-color 0.18s; }
+  .zona-item.sel { border-color: var(--brand); background: #1F1510; }
+  .zona-name { font-size: 14px; color: var(--text); }
+  .zona-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.18s; }
+  .zona-item.sel .zona-check { background: var(--brand); border-color: var(--brand); }
+  .zona-check svg { width: 11px; height: 11px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; display: none; }
+  .zona-item.sel .zona-check svg { display: block; }
+
+  /* dropdown */
+  .dropdown-wrap { position: relative; }
+  .dropdown-btn { width: 100%; padding: 11px 13px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; color: var(--text-muted); font-family: var(--font-body); font-size: 14px; font-weight: 300; cursor: pointer; display: flex; align-items: center; justify-content: space-between; text-align: left; transition: border-color 0.2s; }
+  .dropdown-btn.open { border-color: var(--brand); border-radius: 10px 10px 0 0; }
+  .dropdown-btn svg { width: 14px; height: 14px; stroke: var(--text-dim); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; flex-shrink: 0; }
+  .dropdown-btn.open svg { transform: rotate(180deg); }
+  .dropdown-menu { display: none; background: var(--bg-card); border: 1px solid var(--brand); border-top: none; border-radius: 0 0 10px 10px; max-height: 200px; overflow-y: auto; }
+  .dropdown-menu.open { display: block; }
+  .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 11px 13px; cursor: pointer; transition: background 0.15s; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
+  .dropdown-item:last-child { border-bottom: none; }
+  .dropdown-item:hover { background: #202020; }
+  .dropdown-item.sel { color: var(--text); background: #1F1510; }
+  .item-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .item-check svg { width: 10px; height: 10px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; display: none; }
+  .dropdown-item.sel .item-check { background: var(--brand); border-color: var(--brand); }
+  .dropdown-item.sel .item-check svg { display: block; }
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(232,103,42,0.15); border: 1px solid rgba(232,103,42,0.3); border-radius: 20px; font-size: 12px; color: var(--brand); cursor: pointer; }
+  .tag svg { width: 11px; height: 11px; stroke: var(--brand); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* animations */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .fade-in { opacity:0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s forwards; }
+
+  @media (max-width:480px) {
+    .shell { padding: 0; min-height: 100dvh; }
+    .phone { max-width:100%; border-radius:0; border:none; box-shadow:none; min-height:100dvh; }
+    .screen { min-height: 100dvh; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="phone">
+
+<!-- ════════════════════════════════
+     SPLASH
+════════════════════════════════ -->
+<div class="screen active" id="screen-splash">
+  <div style="background:#111110;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 28px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(232,103,42,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(232,103,42,0.08) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="opacity:0;animation:fadeUp 0.6s ease 0.1s forwards;text-align:center;width:100%;">
+      <p style="font-family:var(--font-display);font-size:42px;color:var(--text);letter-spacing:-1px;margin-bottom:8px;">Obra<span style="color:var(--brand)">link</span></p>
+      <p style="font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--brand);margin-bottom:32px;">CABA y GBA · 200+ proveedores</p>
+      <h1 style="font-family:var(--font-display);font-size:36px;line-height:1.1;color:var(--text);margin-bottom:12px;">Encontrá el<br>proveedor<br><em style="font-style:italic;color:var(--brand);">que necesitás</em></h1>
+      <p style="font-size:15px;font-weight:300;color:var(--text-muted);line-height:1.6;margin-bottom:40px;">Proveedores de construcción<br>calificados por arquitectos reales.</p>
+      <div style="display:flex;justify-content:center;gap:24px;margin-bottom:48px;">
+        <div style="text-align:center"><p style="font-family:var(--font-display);font-size:22px;color:var(--text);">200+</p><p style="font-size:10px;color:var(--text-muted);">Proveedores</p></div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="text-align:center"><p style="font-family:var(--font-display);font-size:22px;color:var(--text);">1.2k</p><p style="font-size:10px;color:var(--text-muted);">Reseñas</p></div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="text-align:center"><p style="font-family:var(--font-display);font-size:22px;color:var(--text);">4.8★</p><p style="font-size:10px;color:var(--text-muted);">Calificación</p></div>
+      </div>
+      <button class="btn-primary" onclick="nav('screen-quien')" style="margin-bottom:10px;">Empezar</button>
+      <button onclick="nav('screen-quien')" style="width:100%;padding:14px;border-radius:var(--radius);background:rgba(255,255,255,0.06);color:var(--text-muted);border:none;font-family:var(--font-body);font-size:14px;cursor:pointer;">Ya tengo cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     ¿QUIÉN SOS?
+════════════════════════════════ -->
+<div class="screen" id="screen-quien">
+  <div style="padding:44px 24px 36px;flex:1;display:flex;flex-direction:column;">
+    <button class="back-btn fade-in" onclick="nav('screen-splash')" style="margin-bottom:28px;">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver
+    </button>
+    <div style="margin-bottom:28px;opacity:0;animation:fadeUp 0.5s ease 0.2s forwards;">
+      <p class="eyebrow" style="color:var(--brand);">Bienvenido a Obralink</p>
+      <h1 class="headline" style="font-size:34px;">¿Cómo vas a<br>usar la app?</h1>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;opacity:0;animation:fadeUp 0.5s ease 0.3s forwards;">
+
+      <button onclick="nav('screen-reg-arq')" style="display:flex;align-items:center;gap:14px;padding:18px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;text-align:left;width:100%;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--border-md)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:50px;height:50px;background:#17243A;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="24" height="24" viewBox="0 0 24 24" stroke="#6BA3E0" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        </div>
+        <div style="flex:1;">
+          <p style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:3px;">Soy arquitecto / ingeniero</p>
+          <p style="font-size:13px;font-weight:300;color:var(--text-muted);">Gestiono obras y busco proveedores</p>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--text-dim)" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <button onclick="nav('screen-reg-prov1')" style="display:flex;align-items:center;gap:14px;padding:18px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;text-align:left;width:100%;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--border-md)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:50px;height:50px;background:#172518;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="24" height="24" viewBox="0 0 24 24" stroke="#5DBF85" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+        </div>
+        <div style="flex:1;">
+          <p style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:3px;">Soy proveedor</p>
+          <p style="font-size:13px;font-weight:300;color:var(--text-muted);">Quiero mostrar mi trabajo o producto y conseguir clientes</p>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--text-dim)" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <button onclick="nav('screen-reg-part')" style="display:flex;align-items:center;gap:14px;padding:18px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;text-align:left;width:100%;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--border-md)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:50px;height:50px;background:#271E10;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="24" height="24" viewBox="0 0 24 24" stroke="#D4993A" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg>
+        </div>
+        <div style="flex:1;">
+          <p style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:3px;">Soy particular</p>
+          <p style="font-size:13px;font-weight:300;color:var(--text-muted);">Necesito un proveedor para un arreglo en mi casa</p>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--text-dim)" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+    </div>
+    <p style="text-align:center;font-size:12px;color:var(--text-dim);margin-top:auto;padding-top:24px;">Podés cambiar tu perfil en cualquier momento</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     REGISTRO ARQUITECTO
+════════════════════════════════ -->
+<div class="screen" id="screen-reg-arq">
+  <div style="padding:40px 24px 36px;flex:1;display:flex;flex-direction:column;">
+    <button class="back-btn" onclick="nav('screen-quien')" style="margin-bottom:28px;">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver
+    </button>
+    <div style="margin-bottom:24px;">
+      <p class="eyebrow" style="color:#6BA3E0;display:flex;align-items:center;gap:7px;">
+        <span style="width:22px;height:22px;background:#6BA3E0;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;">
+          <svg width="13" height="13" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        </span>
+        Arquitecto / Ingeniero
+      </p>
+      <h1 class="headline" style="font-size:30px;">Creá tu cuenta</h1>
+      <p class="subhead">Gratis, sin tarjeta de crédito</p>
+    </div>
+    <button class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continuar con Google
+    </button>
+    <div class="or-divider"><div class="or-line"></div><span class="or-text">o con email</span><div class="or-line"></div></div>
+    <div class="form-row"><div class="field"><label>Nombre</label><input type="text" placeholder="Juan"></div><div class="field"><label>Apellido</label><input type="text" placeholder="García"></div></div>
+    <div class="field"><label>Email profesional</label><input type="email" placeholder="juan@estudio.com"></div>
+    <div class="field"><label>Nombre del estudio <span style="color:var(--text-dim);font-weight:300;">(opcional)</span></label><input type="text" placeholder="Estudio García & Asociados"></div>
+    <div class="field"><label>Contraseña</label><input type="password" placeholder="Mínimo 8 caracteres"></div>
+    <div class="field"><label>Profesión</label><select><option value="" disabled selected>Seleccioná tu profesión</option><option>Arquitecto</option><option>Ingeniero civil</option><option>Ingeniero estructural</option><option>Director de obra</option><option>Constructor</option><option>Otro</option></select></div>
+    <button class="btn-primary" onclick="nav('screen-home-arq')">Crear cuenta y entrar →</button>
+    <p class="legal">Al registrarte aceptás los <a href="#">Términos</a> y la <a href="#">Política de privacidad</a></p>
+    <p class="login-link">¿Ya tenés cuenta? <button onclick="nav('screen-home-arq')">Iniciá sesión</button></p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     REGISTRO PROVEEDOR — PASO 1
+════════════════════════════════ -->
+<div class="screen" id="screen-reg-prov1">
+  <div style="padding:40px 24px 36px;flex:1;display:flex;flex-direction:column;">
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div><span class="progress-label">Paso 1 de 3</span></div>
+    <button class="back-btn" onclick="nav('screen-quien')" style="margin-bottom:22px;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+    <div style="margin-bottom:22px;">
+      <p class="eyebrow" style="color:#5DBF85;">Proveedor</p>
+      <h1 class="headline" style="font-size:30px;">Tu perfil público</h1>
+      <p class="subhead" style="font-size:13px;">Esto es lo que verán los clientes</p>
+    </div>
+    <div class="form-row"><div class="field"><label>Nombre</label><input type="text" placeholder="Miguel"></div><div class="field"><label>Apellido</label><input type="text" placeholder="Romero"></div></div>
+    <div class="field"><label>Nombre comercial <span style="color:var(--text-dim);font-weight:300;">(opcional)</span></label><input type="text" placeholder="Instalaciones Romero"></div>
+    <div class="field"><label>WhatsApp de contacto</label><input type="tel" placeholder="+54 9 11 0000-0000"></div>
+    <div class="field">
+      <label>Rubros <span style="color:var(--text-dim);font-weight:300;">(podés elegir varios)</span></label>
+      <div class="dropdown-wrap" id="rubroDropdown">
+        <button type="button" class="dropdown-btn" onclick="toggleDropdown()">
+          <span id="dropdownLabel" style="color:var(--text-dim);">Seleccioná tus rubros</span>
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <div class="dropdown-item" onclick="toggleRubro(this,'Electricidad')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Electricidad</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Plomería')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Plomería</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Estructura')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Estructura</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Pintura')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Pintura</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Carpintería')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Carpintería</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Yesería')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Yesería</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Herrería')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Herrería</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Gas')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Gas</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Aire acondicionado')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Aire acondicionado</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Pisos y revestimientos')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Pisos y revestimientos</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Impermeabilización')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Impermeabilización</span></div>
+          <div class="dropdown-item" onclick="toggleRubro(this,'Materiales')"><div class="item-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Materiales</span></div>
+        </div>
+      </div>
+      <div class="tags-wrap" id="tagsWrap"></div>
+    </div>
+    <button class="btn-primary" onclick="nav('screen-reg-prov2')">Continuar →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     REGISTRO PROVEEDOR — PASO 2
+════════════════════════════════ -->
+<div class="screen" id="screen-reg-prov2">
+  <div style="padding:40px 24px 36px;flex:1;display:flex;flex-direction:column;">
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div><span class="progress-label">Paso 2 de 3</span></div>
+    <button class="back-btn" onclick="nav('screen-reg-prov1')" style="margin-bottom:22px;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+    <div style="margin-bottom:22px;">
+      <p class="eyebrow" style="color:#5DBF85;">Proveedor</p>
+      <h1 class="headline" style="font-size:30px;">Zona y cuenta</h1>
+      <p class="subhead" style="font-size:13px;">Dónde trabajás y cómo vas a ingresar</p>
+    </div>
+    <div class="field">
+      <label>Zona de trabajo</label>
+      <div class="zona-list">
+        <div class="zona-item sel" onclick="this.classList.toggle('sel')"><span class="zona-name">CABA</span><div class="zona-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+        <div class="zona-item" onclick="this.classList.toggle('sel')"><span class="zona-name">GBA Norte</span><div class="zona-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+        <div class="zona-item" onclick="this.classList.toggle('sel')"><span class="zona-name">GBA Sur</span><div class="zona-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+        <div class="zona-item" onclick="this.classList.toggle('sel')"><span class="zona-name">GBA Oeste</span><div class="zona-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      </div>
+    </div>
+    <div class="field"><label>Descripción breve <span style="color:var(--text-dim);font-weight:300;">(opcional)</span></label><textarea rows="2" placeholder="Contá qué hacés y cuántos años de experiencia tenés..."></textarea></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="miguel@email.com"></div>
+    <div class="field"><label>Contraseña</label><input type="password" placeholder="Mínimo 8 caracteres"></div>
+    <button class="btn-primary" onclick="nav('screen-reg-prov3')">Continuar →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     REGISTRO PROVEEDOR — PASO 3
+════════════════════════════════ -->
+<div class="screen" id="screen-reg-prov3">
+  <div style="padding:40px 24px 36px;flex:1;display:flex;flex-direction:column;">
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:99%"></div></div><span class="progress-label">Paso 3 de 3</span></div>
+    <button class="back-btn" onclick="nav('screen-reg-prov2')" style="margin-bottom:22px;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+    <div style="margin-bottom:22px;">
+      <p class="eyebrow" style="color:#5DBF85;">Proveedor</p>
+      <h1 class="headline" style="font-size:30px;">Activá tu perfil</h1>
+      <p class="subhead" style="font-size:13px;">Último paso — empezás a recibir clientes hoy</p>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div><p style="font-size:16px;font-weight:500;color:var(--text);">Plan Estándar</p><p style="font-size:12px;color:var(--text-muted);margin-top:3px;">Cancelable cuando quieras</p></div>
+        <div style="text-align:right;"><p style="font-family:var(--font-display);font-size:26px;color:var(--text);">$15.000</p><p style="font-size:12px;color:var(--text-muted);">ARS / mes</p></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text-muted);font-weight:300;"><div style="width:18px;height:18px;border-radius:50%;background:rgba(93,191,133,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="10" height="10" viewBox="0 0 24 24" stroke="#5DBF85" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Perfil público con fotos y reseñas</div>
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text-muted);font-weight:300;"><div style="width:18px;height:18px;border-radius:50%;background:rgba(93,191,133,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="10" height="10" viewBox="0 0 24 24" stroke="#5DBF85" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Contacto directo por WhatsApp</div>
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text-muted);font-weight:300;"><div style="width:18px;height:18px;border-radius:50%;background:rgba(93,191,133,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="10" height="10" viewBox="0 0 24 24" stroke="#5DBF85" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Aparecés en búsquedas de tu rubro y zona</div>
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text-muted);font-weight:300;"><div style="width:18px;height:18px;border-radius:50%;background:rgba(93,191,133,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="10" height="10" viewBox="0 0 24 24" stroke="#5DBF85" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Estadísticas de visitas a tu perfil</div>
+      </div>
+    </div>
+    <button onclick="nav('screen-home-prov')" style="width:100%;padding:14px;border-radius:var(--radius);background:#009EE3;color:#fff;border:none;font-family:var(--font-body);font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 4px 20px rgba(0,158,227,0.25);">
+      <svg width="20" height="20" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#009EE3"/><path d="M10 20.5c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="20" cy="20.5" r="3" fill="#fff"/></svg>
+      Pagar con MercadoPago
+    </button>
+    <p class="legal" style="margin-top:14px;">Pago seguro · Se renueva automáticamente · <a href="#">Ver términos</a></p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     REGISTRO PARTICULAR
+════════════════════════════════ -->
+<div class="screen" id="screen-reg-part">
+  <div style="padding:40px 24px 36px;flex:1;display:flex;flex-direction:column;">
+    <button class="back-btn" onclick="nav('screen-quien')" style="margin-bottom:28px;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+    <div style="margin-bottom:24px;">
+      <p class="eyebrow" style="color:#D4993A;display:flex;align-items:center;gap:7px;">
+        <span style="width:22px;height:22px;background:#D4993A;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg></span>
+        Cliente particular
+      </p>
+      <h1 class="headline" style="font-size:30px;">Creá tu cuenta</h1>
+      <p class="subhead">Gratis — encontrá proveedores de confianza</p>
+    </div>
+    <button class="btn-google"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Continuar con Google</button>
+    <div class="or-divider"><div class="or-line"></div><span class="or-text">o con email</span><div class="or-line"></div></div>
+    <div class="form-row"><div class="field"><label>Nombre</label><input type="text" placeholder="Laura"></div><div class="field"><label>Apellido</label><input type="text" placeholder="Martínez"></div></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="laura@email.com"></div>
+    <div class="field"><label>Contraseña</label><input type="password" placeholder="Mínimo 8 caracteres"></div>
+    <button class="btn-primary" onclick="nav('screen-home-part')">Crear cuenta y entrar →</button>
+    <p class="legal">Al registrarte aceptás los <a href="#">Términos</a> y la <a href="#">Política de privacidad</a></p>
+    <p class="login-link">¿Ya tenés cuenta? <button onclick="nav('screen-home-part')">Iniciá sesión</button></p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     HOME ARQUITECTO
+════════════════════════════════ -->
+<div class="screen" id="screen-home-arq">
+  <div style="background:#151513;padding:44px 22px 20px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(232,103,42,0.12) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;">
+      <div><p style="font-size:13px;color:var(--text-muted);margin-bottom:3px;font-weight:300;">Buenos días 👋</p><p style="font-family:var(--font-display);font-size:26px;color:var(--text);letter-spacing:-0.3px;">Arq. García</p></div>
+      <button style="width:40px;height:40px;border-radius:50%;background:var(--brand);border:none;cursor:pointer;font-family:var(--font-display);font-size:16px;color:#fff;">G</button>
+    </div>
+    <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+      <div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--border);"><p style="font-size:20px;font-weight:500;color:var(--text);">3</p><p style="font-size:10px;color:var(--text-muted);margin-top:1px;">Obras activas</p></div>
+      <div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--border);"><p style="font-size:20px;font-weight:500;color:var(--text);">8</p><p style="font-size:10px;color:var(--text-muted);margin-top:1px;">Tareas hoy</p></div>
+      <div style="flex:1;padding:10px 8px;text-align:center;"><p style="font-size:20px;font-weight:500;color:var(--text);">62%</p><p style="font-size:10px;color:var(--text-muted);margin-top:1px;">Avance medio</p></div>
+    </div>
+  </div>
+  <div style="padding:20px;flex:1;overflow-y:auto;">
+    <div class="sec-head"><p class="sec-title">Accesos rápidos</p></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#17243A;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#6BA3E0" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <span style="font-size:11px;color:var(--text-muted);text-align:center;">Gantt</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#1A2515;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#7DBF5D" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <span style="font-size:11px;color:var(--text-muted);text-align:center;">Tareas</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#271E10;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#D4993A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <span style="font-size:11px;color:var(--text-muted);text-align:center;">Presupuesto</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#25171A;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#D47A8A" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <span style="font-size:11px;color:var(--text-muted);text-align:center;">Fotos</span>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-head"><p class="sec-title">Mis obras</p><button class="sec-link">Ver todas</button></div>
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;"><p style="font-size:15px;font-weight:500;color:var(--text);">Casa Fernández</p><span class="badge badge-green">En curso</span></div><p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Palermo, CABA</p><div class="prog-row"><span>Avance</span><span style="color:var(--text);font-weight:500;">62%</span></div><div class="prog-bar-obra"><div class="prog-fill-obra" style="width:62%;background:#5DBF85;"></div></div></div>
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;"><p style="font-size:15px;font-weight:500;color:var(--text);">Edificio Mitre 420</p><span class="badge badge-amber">Pausada</span></div><p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">San Telmo, CABA</p><div class="prog-row"><span>Avance</span><span style="color:var(--text);font-weight:500;">34%</span></div><div class="prog-bar-obra"><div class="prog-fill-obra" style="width:34%;background:#6BA3E0;"></div></div></div>
+    <button style="width:100%;padding:13px;border-radius:var(--radius);background:transparent;color:var(--text-muted);border:1px dashed var(--border-md);font-family:var(--font-body);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Nueva obra
+    </button>
+    <div class="divider"></div>
+    <div class="sec-head"><p class="sec-title">Proveedores destacados</p><button class="sec-link">Ver directorio</button></div>
+    <div class="card" style="display:flex;align-items:center;gap:12px;"><div style="width:42px;height:42px;border-radius:50%;background:#17243A;color:#6BA3E0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0;">IR</div><div style="flex:1;"><p style="font-size:14px;font-weight:500;color:var(--text);">Instalaciones Romero</p><p style="font-size:12px;color:var(--text-muted);">Electricidad · Gas</p></div><div style="text-align:right;"><div style="display:flex;gap:2px;justify-content:flex-end;margin-bottom:3px;">⭐⭐⭐⭐⭐</div><p style="font-size:11px;color:var(--text-muted);">4.9 · 38 reseñas</p></div></div>
+    <div class="card" style="display:flex;align-items:center;gap:12px;"><div style="width:42px;height:42px;border-radius:50%;background:#1A2515;color:#7DBF5D;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0;">HD</div><div style="flex:1;"><p style="font-size:14px;font-weight:500;color:var(--text);">Hormigones del Sur</p><p style="font-size:12px;color:var(--text-muted);">Estructura · Hormigón</p></div><div style="text-align:right;"><div style="display:flex;gap:2px;justify-content:flex-end;margin-bottom:3px;">⭐⭐⭐⭐</div><p style="font-size:11px;color:var(--text-muted);">4.3 · 21 reseñas</p></div></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item active"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg><span class="nav-label">Obras</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nav-label">Equipo</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span class="nav-label">Buscar</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nav-label">Perfil</span></button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     HOME PROVEEDOR
+════════════════════════════════ -->
+<div class="screen" id="screen-home-prov">
+  <div style="background:#151513;padding:44px 22px 20px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(93,191,133,0.1) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:3px;font-weight:300;">Buenos días 👋</p>
+        <p style="font-family:var(--font-display);font-size:22px;color:var(--text);letter-spacing:-0.3px;">Instalaciones Romero</p>
+        <div style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--green);background:rgba(93,191,133,0.1);border:1px solid rgba(93,191,133,0.2);border-radius:20px;padding:3px 9px;margin-top:5px;">Electricidad · Gas · Plomería</div>
+      </div>
+      <button style="width:40px;height:40px;border-radius:50%;background:rgba(93,191,133,0.2);border:1.5px solid rgba(93,191,133,0.3);cursor:pointer;font-family:var(--font-display);font-size:15px;color:var(--green);">IR</button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(93,191,133,0.08);border:1px solid rgba(93,191,133,0.15);border-radius:12px;padding:10px 13px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;"></div>
+        <div><p style="font-size:13px;color:var(--text);">Perfil activo</p><p style="font-size:11px;color:var(--text-muted);">Plan Estándar · $15.000/mes</p></div>
+      </div>
+      <span style="font-size:12px;color:var(--text-muted);cursor:pointer;">Gestionar →</span>
+    </div>
+  </div>
+  <div style="padding:20px;flex:1;overflow-y:auto;">
+    <div class="sec-head"><p class="sec-title">Este mes</p><button class="sec-link">Mayo 2026</button></div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:20px;">
+      <div style="background:rgba(93,191,133,0.06);border:1px solid rgba(93,191,133,0.2);border-radius:var(--radius);padding:14px 15px;"><p style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Visitas al perfil</p><p style="font-family:var(--font-display);font-size:28px;color:var(--green);line-height:1;">47</p><span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(93,191,133,0.12);color:var(--green);">↑ 23% vs abril</span></div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 15px;"><p style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Consultas recibidas</p><p style="font-family:var(--font-display);font-size:28px;color:var(--text);line-height:1;">12</p><span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(232,103,42,0.12);color:var(--brand);">↑ 4 nuevas</span></div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 15px;"><p style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Calificación</p><p style="font-family:var(--font-display);font-size:28px;color:var(--text);line-height:1;">4.9</p><span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(232,103,42,0.12);color:var(--brand);">★ 38 reseñas</span></div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 15px;"><p style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Trabajos realizados</p><p style="font-family:var(--font-display);font-size:28px;color:var(--text);line-height:1;">14</p><span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(93,191,133,0.12);color:var(--green);">↑ 2 este mes</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-head"><p class="sec-title">Últimas consultas</p><button class="sec-link">Ver todas</button></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;"><div style="width:38px;height:38px;border-radius:50%;background:#17243A;color:#6BA3E0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">AG</div><div style="flex:1;"><p style="font-size:14px;font-weight:500;color:var(--text);">Arq. García</p><p style="font-size:12px;color:var(--text-muted);">WhatsApp · Casa Fernández</p></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span style="font-size:11px;color:var(--text-dim);">Hace 2h</span><span style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(232,103,42,0.15);color:var(--brand);font-weight:500;">Nuevo</span></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;"><div style="width:38px;height:38px;border-radius:50%;background:#271E10;color:#D4993A;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">LM</div><div style="flex:1;"><p style="font-size:14px;font-weight:500;color:var(--text);">Laura Martínez</p><p style="font-size:12px;color:var(--text-muted);">WhatsApp · Particular</p></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span style="font-size:11px;color:var(--text-dim);">Ayer</span><span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--border);color:var(--text-dim);">Visto</span></div></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item active"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg><span class="nav-label">Inicio</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nav-label">Consultas</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span class="nav-label">Reseñas</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nav-label">Perfil</span></button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     HOME PARTICULAR
+════════════════════════════════ -->
+<div class="screen" id="screen-home-part">
+  <div style="background:#151513;padding:44px 20px 22px;border-bottom:1px solid var(--border);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div><p style="font-size:13px;color:var(--text-muted);margin-bottom:2px;font-weight:300;">Hola, Laura 👋</p><p style="font-family:var(--font-display);font-size:26px;color:var(--text);letter-spacing:-0.3px;">¿Qué necesitás?</p></div>
+      <button style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--text-muted)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:var(--radius);padding:12px 14px;cursor:pointer;">
+      <svg width="17" height="17" viewBox="0 0 24 24" stroke="rgba(245,242,236,0.3)" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span style="font-size:14px;color:rgba(245,242,236,0.3);flex:1;">Electricista, plomero, pintor...</span>
+      <div style="background:var(--brand);border-radius:8px;padding:5px 12px;cursor:pointer;"><span style="font-size:12px;color:#fff;font-weight:500;">Buscar</span></div>
+    </div>
+  </div>
+  <div style="padding:20px;flex:1;overflow-y:auto;">
+    <div class="sec-head" style="margin-bottom:12px;"><p class="sec-title">Más buscados</p></div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:20px;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;background:rgba(232,103,42,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--brand)" stroke-width="1.8" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span style="font-size:13px;font-weight:500;color:var(--text);">Electricista</span></div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;background:#17252A;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#5BB8D4" stroke-width="1.8" fill="none"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div><span style="font-size:13px;font-weight:500;color:var(--text);">Plomero</span></div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;background:#271E10;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#D4993A" stroke-width="1.8" fill="none"><path d="M2 20l4-4 12-12 4 4L10 20H2z"/></svg></div><span style="font-size:13px;font-weight:500;color:var(--text);">Pintor</span></div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;background:#222220;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--text-muted)" stroke-width="1.8" fill="none"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div><span style="font-size:13px;font-weight:500;color:var(--text);">Ver todos</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-head"><p class="sec-title">Guardados</p></div>
+    <div class="card" style="display:flex;align-items:center;gap:12px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(232,103,42,0.12);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0;">IR</div><div style="flex:1;"><p style="font-size:14px;font-weight:500;color:var(--text);">Instalaciones Romero</p><p style="font-size:12px;color:var(--text-muted);margin-top:2px;">Electricidad · 4.9 ⭐ · CABA</p></div><svg width="20" height="20" viewBox="0 0 24 24" fill="var(--brand)" stroke="var(--brand)" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item active"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg><span class="nav-label">Inicio</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span class="nav-label">Buscar</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="nav-label">Guardados</span></button>
+    <button class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nav-label">Perfil</span></button>
+  </div>
+</div>
+
+</div><!-- /phone -->
+</div><!-- /shell -->
+
+<script>
+// ── NAVEGACIÓN ──
+function nav(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  document.querySelector('.phone').scrollTop = 0;
+}
+
+// ── DROPDOWN RUBROS ──
+let rubrosSeleccionados = [];
+
+function toggleDropdown() {
+  const btn  = document.querySelector('.dropdown-btn');
+  const menu = document.getElementById('dropdownMenu');
+  if (!btn || !menu) return;
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+
+function toggleRubro(el, nombre) {
+  el.classList.toggle('sel');
+  if (el.classList.contains('sel')) {
+    rubrosSeleccionados.push(nombre);
+  } else {
+    rubrosSeleccionados = rubrosSeleccionados.filter(r => r !== nombre);
+  }
+  const label = document.getElementById('dropdownLabel');
+  if (label) {
+    if (rubrosSeleccionados.length === 0) {
+      label.textContent = 'Seleccioná tus rubros';
+      label.style.color = 'var(--text-dim)';
+    } else {
+      label.textContent = rubrosSeleccionados.length === 1 ? rubrosSeleccionados[0] : rubrosSeleccionados.length + ' rubros seleccionados';
+      label.style.color = 'var(--text)';
+    }
+  }
+  const wrap = document.getElementById('tagsWrap');
+  if (wrap) {
+    wrap.innerHTML = '';
+    rubrosSeleccionados.forEach(n => {
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = `${n}<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+      tag.onclick = () => {
+        rubrosSeleccionados = rubrosSeleccionados.filter(r => r !== n);
+        document.querySelectorAll('.dropdown-item').forEach(el => {
+          if (el.querySelector('span')?.textContent === n) el.classList.remove('sel');
+        });
+        toggleRubro({classList:{contains:()=>false,toggle:()=>{}}}, '');
+        // re-render tags
+        const w = document.getElementById('tagsWrap');
+        if (w) { w.innerHTML = ''; rubrosSeleccionados.forEach(x => { const t = document.createElement('div'); t.className='tag'; t.innerHTML=`${x}<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`; w.appendChild(t); }); }
+        if (label) { label.textContent = rubrosSeleccionados.length === 0 ? 'Seleccioná tus rubros' : rubrosSeleccionados.length + ' rubros seleccionados'; label.style.color = rubrosSeleccionados.length === 0 ? 'var(--text-dim)' : 'var(--text)'; }
+      };
+      wrap.appendChild(tag);
+    });
+  }
+}
+
+// cerrar dropdown al click afuera
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('rubroDropdown');
+  if (wrap && !wrap.contains(e.target)) {
+    document.querySelector('.dropdown-btn')?.classList.remove('open');
+    document.getElementById('dropdownMenu')?.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>

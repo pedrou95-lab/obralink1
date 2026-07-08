@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink — Home proveedor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232,103,42,0.22);
+    --green:       #5DBF85;
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --bg-card2:    #222220;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245,242,236,0.45);
+    --text-dim:    rgba(245,242,236,0.2);
+    --border:      rgba(245,242,236,0.07);
+    --border-md:   rgba(245,242,236,0.12);
+    --radius:      14px;
+    --radius-lg:   20px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:   'DM Sans', sans-serif;
+  }
+
+  html, body { background: var(--bg); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+  .shell { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+  .phone {
+    width: 100%; max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: #151513;
+    padding: 44px 22px 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(93,191,133,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-top {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; margin-bottom: 18px;
+  }
+
+  .greeting { font-size: 13px; color: var(--text-muted); margin-bottom: 3px; font-weight: 300; }
+  .name { font-family: var(--font-display); font-size: 24px; color: var(--text); letter-spacing: -0.3px; }
+  .rubro-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--green);
+    background: rgba(93,191,133,0.1); border: 1px solid rgba(93,191,133,0.2);
+    border-radius: 20px; padding: 3px 9px; margin-top: 5px;
+  }
+
+  .avatar-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(93,191,133,0.2); border: 1.5px solid rgba(93,191,133,0.3);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 16px; color: var(--green);
+    flex-shrink: 0;
+  }
+
+  /* suscripción activa */
+  .suscripcion {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(93,191,133,0.08); border: 1px solid rgba(93,191,133,0.15);
+    border-radius: 12px; padding: 10px 13px;
+  }
+  .sus-left { display: flex; align-items: center; gap: 8px; }
+  .sus-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse 2s infinite; }
+  .sus-text { font-size: 13px; color: var(--text); font-weight: 400; }
+  .sus-sub  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .sus-right { font-size: 12px; color: var(--text-muted); cursor: pointer; }
+  .sus-right:hover { color: var(--brand); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  /* ── CONTENT ── */
+  .content { padding: 20px 20px 32px; }
+
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .sec-title { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .sec-link { font-size: 12px; color: var(--brand); cursor: pointer; background: none; border: none; font-family: var(--font-body); }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* ── STATS GRID ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 9px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 15px;
+  }
+
+  .stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-val   { font-family: var(--font-display); font-size: 28px; color: var(--text); line-height: 1; margin-bottom: 4px; }
+  .stat-delta {
+    font-size: 11px; display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 7px; border-radius: 20px;
+  }
+  .delta-up   { background: rgba(93,191,133,0.12); color: var(--green); }
+  .delta-down { background: rgba(232,103,42,0.12); color: var(--brand); }
+  .stat-card.featured { border-color: rgba(93,191,133,0.2); background: rgba(93,191,133,0.06); }
+  .stat-card.featured .stat-val { color: var(--green); }
+
+  /* ── CONSULTAS ── */
+  .consulta-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .consulta-item:last-child { border-bottom: none; }
+  .consulta-item:hover { opacity: 0.8; }
+
+  .cons-av {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500; flex-shrink: 0;
+  }
+  .cons-info { flex: 1; }
+  .cons-nombre { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .cons-meta   { font-size: 12px; color: var(--text-muted); font-weight: 300; }
+  .cons-right  { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+  .cons-time   { font-size: 11px; color: var(--text-dim); }
+
+  .badge-new  { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(232,103,42,0.15); color: var(--brand); font-weight: 500; }
+  .badge-seen { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: var(--border); color: var(--text-dim); }
+
+  /* ── PERFIL RÁPIDO ── */
+  .perfil-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+  }
+
+  .perfil-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .perfil-av  { width: 48px; height: 48px; border-radius: 50%; background: rgba(93,191,133,0.15); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; color: var(--green); flex-shrink: 0; }
+  .perfil-nombre { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .perfil-rubros { font-size: 12px; color: var(--text-muted); font-weight: 300; }
+
+  .rating-row { display: flex; align-items: center; gap: 4px; margin-bottom: 14px; }
+  .stars-fill { display: flex; gap: 2px; }
+  .stars-fill svg { width: 13px; height: 13px; fill: var(--brand); }
+  .rating-text { font-size: 13px; color: var(--text-muted); margin-left: 3px; }
+
+  .prog-completado { margin-bottom: 14px; }
+  .prog-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
+  .prog-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 2px; background: var(--brand); }
+
+  .btn-ver-perfil {
+    width: 100%; padding: 11px; border-radius: var(--radius);
+    background: transparent; color: var(--text-muted);
+    border: 1px solid var(--border-md);
+    font-family: var(--font-body); font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ver-perfil:hover { border-color: var(--brand); color: var(--brand); }
+  .btn-ver-perfil svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav { display: flex; border-top: 1px solid var(--border); background: #151513; }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 4px; padding: 12px 6px 16px;
+    cursor: pointer; border: none; background: transparent;
+    font-family: var(--font-body); color: var(--text-dim); transition: color 0.2s;
+  }
+  .nav-item.active { color: var(--brand); }
+  .nav-item:hover  { color: var(--text-muted); }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-label { font-size: 10px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .header  { opacity:0; animation: fadeUp 0.5s ease 0.1s forwards; }
+  .content { opacity:0; animation: fadeUp 0.5s ease 0.25s forwards; }
+
+  @media (max-width:480px) {
+    .shell { padding: 0; }
+    .phone { max-width:100%; border-radius:0; border:none; box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="phone">
+
+    <!-- ── HEADER ── -->
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <p class="greeting">Buenos días 👋</p>
+          <p class="name">Instalaciones Romero</p>
+          <div class="rubro-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Electricidad · Gas · Plomería
+          </div>
+        </div>
+        <button class="avatar-btn">IR</button>
+      </div>
+      <div class="suscripcion">
+        <div class="sus-left">
+          <div class="sus-dot"></div>
+          <div>
+            <p class="sus-text">Perfil activo</p>
+            <p class="sus-sub">Plan Estándar · $15.000/mes</p>
+          </div>
+        </div>
+        <span class="sus-right">Gestionar →</span>
+      </div>
+    </div>
+
+    <!-- ── CONTENT ── -->
+    <div class="content">
+
+      <!-- Estadísticas -->
+      <div class="sec-head">
+        <p class="sec-title">Este mes</p>
+        <button class="sec-link">Mayo 2026</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card featured">
+          <p class="stat-label">Visitas al perfil</p>
+          <p class="stat-val">47</p>
+          <span class="stat-delta delta-up">↑ 23% vs abril</span>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Consultas recibidas</p>
+          <p class="stat-val">12</p>
+          <span class="stat-delta delta-up">↑ 4 nuevas</span>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Calificación</p>
+          <p class="stat-val">4.9</p>
+          <span class="stat-delta delta-up">★ 38 reseñas</span>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Trabajos realizados</p>
+          <p class="stat-val">14</p>
+          <span class="stat-delta delta-up">↑ 2 este mes</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Consultas -->
+      <div class="sec-head">
+        <p class="sec-title">Últimas consultas</p>
+        <button class="sec-link">Ver todas</button>
+      </div>
+
+      <div class="consulta-item">
+        <div class="cons-av" style="background:#17243A;color:#6BA3E0;">AG</div>
+        <div class="cons-info">
+          <p class="cons-nombre">Arq. García</p>
+          <p class="cons-meta">Consulta por WhatsApp · Casa Fernández</p>
+        </div>
+        <div class="cons-right">
+          <span class="cons-time">Hace 2h</span>
+          <span class="badge-new">Nuevo</span>
+        </div>
+      </div>
+
+      <div class="consulta-item">
+        <div class="cons-av" style="background:#271E10;color:#D4993A;">LM</div>
+        <div class="cons-info">
+          <p class="cons-nombre">Laura Martínez</p>
+          <p class="cons-meta">Consulta por WhatsApp · Particular</p>
+        </div>
+        <div class="cons-right">
+          <span class="cons-time">Ayer</span>
+          <span class="badge-seen">Visto</span>
+        </div>
+      </div>
+
+      <div class="consulta-item">
+        <div class="cons-av" style="background:#17243A;color:#6BA3E0;">PL</div>
+        <div class="cons-info">
+          <p class="cons-nombre">Arq. López</p>
+          <p class="cons-meta">Consulta por WhatsApp · Edificio Mitre</p>
+        </div>
+        <div class="cons-right">
+          <span class="cons-time">Hace 3 días</span>
+          <span class="badge-seen">Visto</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Perfil rápido -->
+      <div class="sec-head">
+        <p class="sec-title">Tu perfil público</p>
+      </div>
+
+      <div class="perfil-card">
+        <div class="perfil-top">
+          <div class="perfil-av">IR</div>
+          <div>
+            <p class="perfil-nombre">Instalaciones Romero</p>
+            <p class="perfil-rubros">Electricidad · Gas · Plomería · CABA y GBA</p>
+          </div>
+        </div>
+        <div class="rating-row">
+          <div class="stars-fill">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <span class="rating-text">4.9 · 38 reseñas</span>
+        </div>
+        <div class="prog-completado">
+          <div class="prog-row">
+            <span>Completitud del perfil</span>
+            <span style="color:var(--text);font-weight:500;">75%</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:75%"></div></div>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">Falta: fotos de trabajos anteriores</p>
+        </div>
+        <button class="btn-ver-perfil">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Ver mi perfil como lo ven los clientes
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── BOTTOM NAV ── -->
+    <div class="bottom-nav">
+      <button class="nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg>
+        <span class="nav-label">Inicio</span>
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="nav-label">Consultas</span>
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span class="nav-label">Reseñas</span>
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="nav-label">Perfil</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

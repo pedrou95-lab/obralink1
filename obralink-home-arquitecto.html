@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink — Home arquitecto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232,103,42,0.22);
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --bg-card2:    #222220;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245,242,236,0.45);
+    --text-dim:    rgba(245,242,236,0.2);
+    --border:      rgba(245,242,236,0.07);
+    --border-md:   rgba(245,242,236,0.12);
+    --radius:      14px;
+    --radius-lg:   20px;
+    --font-display:'DM Serif Display', Georgia, serif;
+    --font-body:   'DM Sans', sans-serif;
+  }
+
+  html, body { background: var(--bg); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+  .shell { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+  .phone {
+    width: 100%; max-width: 390px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: #151513;
+    padding: 44px 22px 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,103,42,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .greeting { font-size: 13px; color: var(--text-muted); margin-bottom: 3px; font-weight: 300; }
+  .name { font-family: var(--font-display); font-size: 26px; color: var(--text); letter-spacing: -0.3px; }
+
+  .avatar-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--brand); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 16px; color: #fff;
+    flex-shrink: 0;
+  }
+
+  /* stats strip */
+  .stats-strip {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .stat {
+    flex: 1;
+    padding: 10px 8px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-val { font-size: 20px; font-weight: 500; color: var(--text); }
+  .stat-lbl { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 20px 20px 32px; }
+
+  /* section header */
+  .sec-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .sec-title { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .sec-link { font-size: 12px; color: var(--brand); cursor: pointer; background: none; border: none; font-family: var(--font-body); }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* ── OBRAS ── */
+  .obra-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 15px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .obra-card:hover { border-color: var(--border-md); background: var(--bg-card2); }
+  .obra-card:last-child { margin-bottom: 0; }
+
+  .obra-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 5px; }
+  .obra-nombre { font-size: 15px; font-weight: 500; color: var(--text); }
+  .obra-dir { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-bottom: 12px; }
+
+  .badge {
+    font-size: 10px; padding: 3px 9px; border-radius: 20px;
+    font-weight: 500; white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-green  { background: rgba(93,191,133,0.15); color: #5DBF85; }
+  .badge-amber  { background: rgba(212,153,58,0.15);  color: #D4993A; }
+  .badge-blue   { background: rgba(107,163,224,0.15); color: #6BA3E0; }
+
+  /* progress */
+  .prog-wrap { }
+  .prog-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
+  .prog-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+  .fill-green { background: #5DBF85; }
+  .fill-blue  { background: #6BA3E0; }
+  .fill-amber { background: #D4993A; }
+
+  /* ── ACCESOS RÁPIDOS ── */
+  .accesos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .acceso {
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    padding: 12px 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .acceso:hover { border-color: var(--border-md); background: var(--bg-card2); }
+
+  .acceso-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .acceso-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .acceso-label { font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.3; }
+
+  /* ── PROVEEDORES ── */
+  .prov-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 13px 15px;
+    margin-bottom: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .prov-card:hover { border-color: var(--border-md); background: var(--bg-card2); }
+  .prov-card:last-child { margin-bottom: 0; }
+
+  .av {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 500; flex-shrink: 0;
+  }
+
+  .prov-info { flex: 1; }
+  .prov-nombre { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .prov-rubro  { font-size: 12px; color: var(--text-muted); font-weight: 300; }
+
+  .prov-rating {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;
+  }
+  .stars { display: flex; gap: 2px; }
+  .stars svg { width: 11px; height: 11px; fill: var(--brand); }
+  .rating-num { font-size: 11px; color: var(--text-muted); }
+
+  /* ── BTN NUEVA OBRA ── */
+  .btn-new-obra {
+    width: 100%; padding: 13px; border-radius: var(--radius);
+    background: transparent; color: var(--text);
+    border: 1px dashed var(--border-md);
+    font-family: var(--font-body); font-size: 14px; font-weight: 400;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: border-color 0.2s, background 0.2s; margin-top: 10px;
+    color: var(--text-muted);
+  }
+  .btn-new-obra:hover { border-color: var(--brand); color: var(--brand); background: rgba(232,103,42,0.04); }
+  .btn-new-obra svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    display: flex;
+    border-top: 1px solid var(--border);
+    background: #151513;
+  }
+
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 4px; padding: 12px 6px 16px;
+    cursor: pointer; border: none; background: transparent;
+    font-family: var(--font-body); color: var(--text-dim);
+    transition: color 0.2s;
+  }
+  .nav-item.active { color: var(--brand); }
+  .nav-item:hover { color: var(--text-muted); }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-label { font-size: 10px; font-weight: 400; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .header    { opacity:0; animation: fadeUp 0.5s ease 0.1s forwards; }
+  .content   { opacity:0; animation: fadeUp 0.5s ease 0.25s forwards; }
+
+  @media (max-width:480px) {
+    .shell { padding: 0; }
+    .phone { max-width:100%; border-radius:0; border:none; box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="phone">
+
+    <!-- ── HEADER ── -->
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <p class="greeting">Buenos días 👋</p>
+          <p class="name">Arq. García</p>
+        </div>
+        <button class="avatar-btn">G</button>
+      </div>
+      <div class="stats-strip">
+        <div class="stat">
+          <p class="stat-val">3</p>
+          <p class="stat-lbl">Obras activas</p>
+        </div>
+        <div class="stat">
+          <p class="stat-val">8</p>
+          <p class="stat-lbl">Tareas hoy</p>
+        </div>
+        <div class="stat">
+          <p class="stat-val">62%</p>
+          <p class="stat-lbl">Avance medio</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONTENT ── -->
+    <div class="content">
+
+      <!-- Accesos rápidos -->
+      <div class="sec-head">
+        <p class="sec-title">Accesos rápidos</p>
+      </div>
+      <div class="accesos">
+        <div class="acceso">
+          <div class="acceso-icon" style="background:#17243A;color:#6BA3E0;">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+          </div>
+          <span class="acceso-label">Gantt</span>
+        </div>
+        <div class="acceso">
+          <div class="acceso-icon" style="background:#1A2515;color:#7DBF5D;">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <span class="acceso-label">Tareas</span>
+        </div>
+        <div class="acceso">
+          <div class="acceso-icon" style="background:#271E10;color:#D4993A;">
+            <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <span class="acceso-label">Presupuesto</span>
+        </div>
+        <div class="acceso">
+          <div class="acceso-icon" style="background:#25171A;color:#D47A8A;">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <span class="acceso-label">Fotos</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Obras -->
+      <div class="sec-head">
+        <p class="sec-title">Mis obras</p>
+        <button class="sec-link">Ver todas</button>
+      </div>
+
+      <div class="obra-card">
+        <div class="obra-top">
+          <p class="obra-nombre">Casa Fernández</p>
+          <span class="badge badge-green">En curso</span>
+        </div>
+        <p class="obra-dir">Palermo, CABA · Dir: Arq. García</p>
+        <div class="prog-wrap">
+          <div class="prog-row"><span>Avance general</span><span style="color:var(--text);font-weight:500;">62%</span></div>
+          <div class="prog-bar"><div class="prog-fill fill-green" style="width:62%"></div></div>
+        </div>
+      </div>
+
+      <div class="obra-card">
+        <div class="obra-top">
+          <p class="obra-nombre">Edificio Mitre 420</p>
+          <span class="badge badge-amber">Pausada</span>
+        </div>
+        <p class="obra-dir">San Telmo, CABA · Dir: Arq. López</p>
+        <div class="prog-wrap">
+          <div class="prog-row"><span>Avance general</span><span style="color:var(--text);font-weight:500;">34%</span></div>
+          <div class="prog-bar"><div class="prog-fill fill-blue" style="width:34%"></div></div>
+        </div>
+      </div>
+
+      <div class="obra-card">
+        <div class="obra-top">
+          <p class="obra-nombre">Local Rivadavia</p>
+          <span class="badge badge-blue">Por iniciar</span>
+        </div>
+        <p class="obra-dir">Caballito, CABA · Dir: Arq. García</p>
+        <div class="prog-wrap">
+          <div class="prog-row"><span>Avance general</span><span style="color:var(--text);font-weight:500;">0%</span></div>
+          <div class="prog-bar"><div class="prog-fill fill-amber" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <button class="btn-new-obra">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Nueva obra
+      </button>
+
+      <div class="divider"></div>
+
+      <!-- Proveedores -->
+      <div class="sec-head">
+        <p class="sec-title">Proveedores destacados</p>
+        <button class="sec-link">Ver directorio</button>
+      </div>
+
+      <div class="prov-card">
+        <div class="av" style="background:#17243A;color:#6BA3E0;">IR</div>
+        <div class="prov-info">
+          <p class="prov-nombre">Instalaciones Romero</p>
+          <p class="prov-rubro">Electricidad · Gas · Plomería</p>
+        </div>
+        <div class="prov-rating">
+          <div class="stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="rating-num">4.9 · 38 reseñas</p>
+        </div>
+      </div>
+
+      <div class="prov-card">
+        <div class="av" style="background:#1A2515;color:#7DBF5D;">HD</div>
+        <div class="prov-info">
+          <p class="prov-nombre">Hormigones del Sur</p>
+          <p class="prov-rubro">Estructura · Hormigón elaborado</p>
+        </div>
+        <div class="prov-rating">
+          <div class="stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="rating-num">4.3 · 21 reseñas</p>
+        </div>
+      </div>
+
+      <div class="prov-card">
+        <div class="av" style="background:#25171A;color:#D47A8A;">CD</div>
+        <div class="prov-info">
+          <p class="prov-nombre">Carpintería Díaz</p>
+          <p class="prov-rubro">Carpintería · Aberturas</p>
+        </div>
+        <div class="prov-rating">
+          <div class="stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="rating-num">4.7 · 15 reseñas</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── BOTTOM NAV ── -->
+    <div class="bottom-nav">
+      <button class="nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V13h6v8"/></svg>
+        <span class="nav-label">Obras</span>
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="nav-label">Equipo</span>
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span class="nav-label">Buscar</span>
+      </button>
+      <button class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="nav-label">Perfil</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

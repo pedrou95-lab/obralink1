@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Obralink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:       #E8672A;
+    --brand-dim:   #C04E18;
+    --brand-glow:  rgba(232, 103, 42, 0.25);
+    --bg:          #111110;
+    --bg-card:     #1C1C1A;
+    --text:        #F5F2EC;
+    --text-muted:  rgba(245, 242, 236, 0.45);
+    --border:      rgba(245, 242, 236, 0.08);
+    --radius:      18px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body:    'DM Sans', sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ── PHONE SHELL (desktop preview) ── */
+  .shell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    min-height: 780px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  /* ── BACKGROUND TEXTURE ── */
+  .bg-texture {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 10%, rgba(232,103,42,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 10% 80%, rgba(232,103,42,0.08) 0%, transparent 55%);
+  }
+
+  /* grain overlay */
+  .bg-texture::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 780px;
+    padding: 56px 32px 48px;
+  }
+
+  /* ── LOGO WORDMARK ── */
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.2s forwards;
+  }
+
+  .logo-wordmark {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-wordmark span {
+    color: var(--brand);
+  }
+
+  /* ── EYEBROW ── */
+  .eyebrow {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 14px;
+    opacity: 0;
+    animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.35s forwards;
+  }
+
+  /* ── HEADLINE ── */
+  .headline {
+    font-family: var(--font-display);
+    font-size: 46px;
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.45s forwards;
+  }
+
+  .headline em {
+    font-style: italic;
+    color: var(--brand);
+  }
+
+  /* ── SUBTEXT ── */
+  .subtext {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 280px;
+    opacity: 0;
+    animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.55s forwards;
+  }
+
+  /* ── STATS STRIP ── */
+  .stats {
+    display: flex;
+    gap: 0;
+    margin-top: 40px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.65s forwards;
+  }
+
+  .stat {
+    flex: 1;
+    padding: 16px 12px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-val {
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.3;
+  }
+
+  /* ── SPACER ── */
+  .spacer { flex: 1; }
+
+  /* ── BUTTONS ── */
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.8s forwards;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--radius);
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 4px 24px var(--brand-glow);
+  }
+
+  .btn-primary:hover {
+    background: var(--brand-dim);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 32px var(--brand-glow);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-ghost {
+    width: 100%;
+    padding: 15px;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: color 0.18s, border-color 0.18s;
+  }
+
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: rgba(245,242,236,0.2);
+  }
+
+  /* ── LEGAL ── */
+  .legal {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.1s forwards;
+  }
+
+  .legal a {
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ── DECORATIVE LINE ── */
+  .deco-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 4px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── MOBILE: full screen ── */
+  @media (max-width: 480px) {
+    .shell { padding: 0; min-height: 100dvh; }
+    .phone {
+      max-width: 100%;
+      min-height: 100dvh;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+    }
+    .content { min-height: 100dvh; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="phone">
+    <div class="deco-line"></div>
+    <div class="bg-texture"></div>
+    <div class="content">
+
+      <!-- Logo -->
+      <div class="logo-mark">
+        <p class="logo-wordmark">Obra<span>link</span></p>
+      </div>
+
+      <!-- Eyebrow -->
+      <p class="eyebrow">CABA y GBA · 200+ profesionales</p>
+
+      <!-- Headline -->
+      <h1 class="headline">
+        Encontrá el<br>proveedor<br><em>que necesitás</em>
+      </h1>
+
+      <!-- Subtext -->
+      <p class="subtext">
+        Proveedores de construcción calificados por arquitectos reales.
+      </p>
+
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat">
+          <p class="stat-val">200+</p>
+          <p class="stat-lbl">Proveedores</p>
+        </div>
+        <div class="stat">
+          <p class="stat-val">1.2k</p>
+          <p class="stat-lbl">Reseñas</p>
+        </div>
+        <div class="stat">
+          <p class="stat-val">4.8★</p>
+          <p class="stat-lbl">Calificación</p>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <!-- Buttons -->
+      <div class="btn-group">
+        <button class="btn-primary" onclick="alert('→ Pantalla: ¿Quién sos?')">
+          Empezar
+        </button>
+        <button class="btn-ghost" onclick="alert('→ Pantalla: Login')">
+          Ya tengo cuenta
+        </button>
+      </div>
+
+      <!-- Legal -->
+      <p class="legal">
+        Al continuar aceptás los <a href="#">Términos</a> y la <a href="#">Política de privacidad</a>
+      </p>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>
